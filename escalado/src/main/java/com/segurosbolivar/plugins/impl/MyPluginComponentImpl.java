@@ -17,17 +17,17 @@ public class MyPluginComponentImpl implements MyPluginComponent
 
         @Inject
         public MyPluginComponentImpl(final ApplicationProperties applicationProperties)
-    {
-        this.applicationProperties = applicationProperties;
-    }
-
-    public String getName()
-    {
-        if(null != applicationProperties)
         {
-            return "myComponent:" + applicationProperties.getDisplayName();
+            this.applicationProperties = applicationProperties;
         }
-        
-        return "myComponent";
-    }
+
+        public String getName()
+        {
+            if(null != applicationProperties)
+            {
+                return "myComponent:" + applicationProperties.getDisplayName();
+            }
+
+            return "myComponent";
+        }
 }
