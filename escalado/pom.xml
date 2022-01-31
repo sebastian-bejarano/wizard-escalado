@@ -81,6 +81,14 @@
             <version>1.8.5</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.atlassian.sal/sal-api -->
+        <dependency>
+            <groupId>com.atlassian.sal</groupId>
+            <artifactId>sal-api</artifactId>
+            <scope>provided</scope>
+            <version>4.0.0</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
