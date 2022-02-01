@@ -19,11 +19,13 @@
     <context>escalado</context> 
   </web-resource>
   <web-item name="miItem" i18n-name-key="mi-item.name" key="mi-item" section="transitions-all" weight="1000">
+    <condition class="com.segurosbolivar.plugins.GUICondition">
+      <param name="issueType">Task</param>
+    </condition>
     <description key="mi-item.description">The miItem Plugin</description>
     <label key="mi-item.label"/>  
     <link linkId="mi-item-link">/plugins/servlet/pluginUI</link>
   </web-item>
-
   <servlet name="pluginUI" class="com.segurosbolivar.plugins.PluginServlet" key="pluginUI">
     <url-pattern>/pluginUI</url-pattern>
   </servlet>

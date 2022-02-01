@@ -48,15 +48,17 @@ public class PluginServlet extends HttpServlet {
         res.getWriter().write("<html><body>Estamos contrlando acceso de usuario administrador!!</body></html>");
     }
 
-    private void redirectToLogin(HttpServletRequest req, HttpServletResponse res) throws IOException{
-        res.sendRedirect(loginUriProvider.getLoginUri(getUri(req)).toASCIIString());
+    private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException
+    {
+        response.sendRedirect(loginUriProvider.getLoginUri(getUri(request)).toASCIIString());
     }
-
-    private URI getUri(HttpServletRequest req){
-        StringBuffer builder = req.getRequestURL();
-        if(req.getQueryString() != null){
+    private URI getUri(HttpServletRequest request)
+    {
+        StringBuffer builder = request.getRequestURL();
+        if (request.getQueryString() != null)
+        {
             builder.append("?");
-            builder.append(req.getQueryString());
+            builder.append(request.getQueryString());
         }
         return URI.create(builder.toString());
     }
