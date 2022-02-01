@@ -10,7 +10,7 @@ import javax.inject.Named;
 import java.util.Map;
 
 @Named
-public class GUICondition extends AbstractWebCondition {
+public class GUIButtonCondition extends AbstractWebCondition {
     private String issueTypeName;
 
     @Override

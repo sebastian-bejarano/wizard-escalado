@@ -18,14 +18,20 @@
     <resource type="download" name="images/" location="/images"/>  
     <context>escalado</context> 
   </web-resource>
+  <!--Web item que funciona como botón-->
   <web-item name="miItem" i18n-name-key="mi-item.name" key="mi-item" section="transitions-all" weight="1000">
-    <condition class="com.segurosbolivar.plugins.GUICondition">
+    <!--Condición controlada por la clase para verificar que el issueType coincida con el pasado por el parámetro-->
+    <condition class="com.segurosbolivar.plugins.GUIButtonCondition">
       <param name="issueType">Task</param>
     </condition>
+    <!--Descripción del web-item-->
     <description key="mi-item.description">The miItem Plugin</description>
-    <label key="mi-item.label"/>  
+    <!--Label tomado de escalado.properties en la estructura de carpetas-->
+    <label key="mi-item.label"/>
+    <!--Link con el que funcionará el botón de "Escalado"-->
     <link linkId="mi-item-link">/plugins/servlet/pluginUI</link>
   </web-item>
+  <!--Servlet para lograr configuraciones del plugin-->
   <servlet name="pluginUI" class="com.segurosbolivar.plugins.PluginServlet" key="pluginUI">
     <url-pattern>/pluginUI</url-pattern>
   </servlet>
