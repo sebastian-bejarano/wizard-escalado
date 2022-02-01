@@ -1,4 +1,4 @@
-package com.segurosbolivar.plugins;
+package com.segurosbolivar.plugins.conditions;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.plugin.webfragment.conditions.AbstractWebCondition;

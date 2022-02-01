@@ -21,7 +21,7 @@
   <!--Web item que funciona como botón-->
   <web-item name="miItem" i18n-name-key="mi-item.name" key="mi-item" section="transitions-all" weight="1000">
     <!--Condición controlada por la clase para verificar que el issueType coincida con el pasado por el parámetro-->
-    <condition class="com.segurosbolivar.plugins.GUIButtonCondition">
+    <condition class="com.segurosbolivar.plugins.conditions.GUIButtonCondition">
       <param name="issueType">Task</param>
     </condition>
     <!--Descripción del web-item-->
@@ -30,7 +30,10 @@
     <label key="mi-item.label"/>
     <!--Link con el que funcionará el botón de "Escalado"-->
     <link linkId="mi-item-link">/plugins/servlet/pluginUI</link>
+    <!--ABRE EL LINK DEL SERVLET EN CUADRO DE DIÁLOGO-->
+    <styleClass>trigger-dialog</styleClass>
   </web-item>
+
   <!--Servlet para lograr configuraciones del plugin-->
   <servlet name="pluginUI" class="com.segurosbolivar.plugins.PluginServlet" key="pluginUI">
     <url-pattern>/pluginUI</url-pattern>
