@@ -5,6 +5,7 @@ import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.user.UserProfile;
 import com.atlassian.templaterenderer.TemplateRenderer;
+import com.atlassian.webresource.api.assembler.PageBuilderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,27 +30,33 @@ public class PluginServlet extends HttpServlet {
     @ComponentImport
     private final LoginUriProvider loginUriProvider;
 
-    @ComponentImport TemplateRenderer templateRenderer;
+    @ComponentImport
+    private final TemplateRenderer templateRenderer;
+
+    @ComponentImport
+    private final PageBuilderService pageBuilderService;
 
     @Inject
-    public PluginServlet(UserManager userManager, LoginUriProvider loginUriProvider, TemplateRenderer templateRenderer){
+    public PluginServlet(UserManager userManager, LoginUriProvider loginUriProvider, TemplateRenderer templateRenderer, PageBuilderService pageBuilderService){
         this.userManager = userManager;
         this.loginUriProvider = loginUriProvider;
         this.templateRenderer = templateRenderer;
+        this.pageBuilderService = pageBuilderService;
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        //Enviamos el recurso de CSS
+        pageBuilderService.assembler().resources().requireWebResource("com.segurosbolivar.plugins.escalado:escalado-resources");
         //Hacemos el mapa entre parámetros y objetos
         Map<String,Object> params = new HashMap<String,Object>();
         //Se obtiene información sobre el usuario que realiza la petición
         UserProfile user = userManager.getRemoteUser(req);
 
-        boolean isUserAdmin = userManager.isSystemAdmin(user.getUserKey());
 
         String userName = user.getUsername();
 
-        if(userName == null || !isUserAdmin){
+        if(userName == null){
             redirectToLogin(req,res);
             return;
         }

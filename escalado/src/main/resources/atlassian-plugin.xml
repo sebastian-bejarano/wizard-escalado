@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2"> 
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
   <plugin-info> 
     <description>${project.description}</description>  
     <version>${project.version}</version>  
@@ -9,14 +9,15 @@
     <param name="plugin-logo">images/pluginLogo.png</param> 
   </plugin-info>  
   <!-- add our i18n resource -->  
-  <resource type="i18n" name="i18n" location="escalado"/>  
+  <resource type="i18n" name="i18n" location="escalado"/>
   <!-- add our web resources -->  
   <web-resource key="escalado-resources" name="escalado Web Resources"> 
-    <dependency>com.atlassian.auiplugin:ajs</dependency>  
+    <dependency>com.atlassian.auiplugin:ajs</dependency>
+    <dependency>com.atlassian.auiplugin:dialog2</dependency>
     <resource type="download" name="escalado.css" location="/css/escalado.css"/>  
     <resource type="download" name="escalado.js" location="/js/escalado.js"/>  
-    <resource type="download" name="images/" location="/images"/>  
-    <context>escalado</context> 
+    <resource type="download" name="images/" location="/images"/>
+    <context>atl.general</context>
   </web-resource>
   <!--Web item que funciona como botón-->
   <web-item name="miItem" i18n-name-key="mi-item.name" key="mi-item" section="transitions-all" weight="1000">
@@ -33,7 +34,6 @@
     <!--ABRE EL LINK DEL SERVLET EN CUADRO DE DIÁLOGO-->
     <styleClass>trigger-dialog</styleClass>
   </web-item>
-
   <!--Servlet para lograr configuraciones del plugin-->
   <servlet name="pluginUI" class="com.segurosbolivar.plugins.PluginServlet" key="pluginUI">
     <url-pattern>/pluginUI</url-pattern>

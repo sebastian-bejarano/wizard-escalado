@@ -1,5 +1,19 @@
-<html>
-    <body>
-        Soy un render de velocity!
+<html>    
+    <head>                
+        <meta name="decorator" content="blank">        
+        $webResourceManager.requireResourcesForContext("atl.general")        
+    </head>
+    <body>        
+        <h2>Seleccione el origen del defecto a escalar</h2>
+        <form action="plugins/servlet/secondStep" action="POST">
+            <div class="groupInput">
+                <input type="radio" name="origen" value="babysitting"/>
+                <label>Babysitting</label>
+            </div>
+            <div class="groupInput">
+                <input type="radio" name="origen" value="Preexistente"/>
+                <label>Preexistente</label>
+            </div>
+        <form>
     </body>
 </html>
