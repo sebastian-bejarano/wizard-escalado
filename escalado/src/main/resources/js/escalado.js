@@ -7,7 +7,19 @@ const callback = () => {
     //Le añadimos una función click;
     boton.onclick = click_function;
 }
-const window_callback = () =>{
+
+const window_callback = () => {
+    setTimeout(function(){
+        $("#mi-item-link-dialog").css(
+            {
+                "width":"50%",
+                "transform":"translate(-23%, -50%)"
+            }
+        );
+    },50);
+}
+
+const first_window_callback = () =>{
     $("#mi-item-link-dialog").css(
         {
             "width":"50%",
@@ -26,6 +38,8 @@ const window_callback = () =>{
         $("#mi-item-link-dialog").remove();
         $(".aui-blanket").remove();
     });
+    const submitBtn = document.querySelector("#submitBtn");
+    submitBtn.onclick = window_callback;
 }
 const observer = new MutationObserver(function(mutations_list) {
    	mutations_list.forEach(function(mutation) {
@@ -33,7 +47,7 @@ const observer = new MutationObserver(function(mutations_list) {
    			if(added_node.id == 'mi-item-link-dialog') {
    				console.log('mi-item-link-dialog has been added');
    				$("#mi-item-link-dialog").ready(()=>{
-                    setTimeout(window_callback,50);
+                    setTimeout(first_window_callback,100);
    				});
    				observer.disconnect();
    			}

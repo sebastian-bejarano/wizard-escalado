@@ -46,27 +46,32 @@ public class SecondStep extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException{
-
-    }
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        //Enviamos el recurso de CSS
-        pageBuilderService.assembler().resources().requireWebResource("com.segurosbolivar.plugins.escalado:escalado-resources");
-        //Hacemos el mapa entre parámetros y objetos
-        Map<String,Object> params = new HashMap<String,Object>();
         //Se obtiene información sobre el usuario que realiza la petición
         UserProfile user = userManager.getRemoteUser(req);
-
-
         String userName = user.getUsername();
 
         if(userName == null){
             redirectToLogin(req,res);
             return;
         }
+        //Mapa de parámetros a renderizar
+        Map<String,Object> params = new HashMap<String,Object>();
+        //Colocamos el tipo de respuesta que va
         res.setContentType("text/html; charset=utf-8");
-        templateRenderer.render("templates/inicio.vm", params,res.getWriter());
-
+        //Verificamos el valor del parámetro origen
+        String actionType = req.getParameter("origen");
+        //Miramos los posibles valores del parámetro origen que viene del formulario
+        switch (actionType) {
+            case "Babysitting":
+                templateRenderer.render("templates/secondStepBaby.vm", params,res.getWriter());
+                break;
+            case "Preexistente":
+                templateRenderer.render("templates/secondStepPre.vm", params,res.getWriter());
+                break;
+            default:
+                res.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+        res.getWriter().write("HELLO THERE!");
     }
 
     private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException

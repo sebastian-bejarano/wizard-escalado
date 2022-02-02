@@ -4,20 +4,8 @@
         $webResourceManager.requireResourcesForContext("atl.general")        
     </head>
     <body>        
-        <h2>Seleccione el origen del defecto a escalar</h2>
-        <form action="/secondStep" action="POST">
-            <div class="groupInput">                
-                <label>
-                    <input type="radio" name="origen" value="Babysitting"/>
-                    Babysitting
-                </label>
-            </div>
-            <div class="groupInput">                
-                <label>
-                    <input type="radio" name="origen" value="Preexistente"/>
-                    Preexistente
-                </label>
-            </div>    
+        <h2>Seleccione el proyecto al cuál desea escalar</h2>
+        <form action="/thirdStep" action="POST">            
             <!-- Dialog footer -->
             <footer class="aui-dialog2-footer">
                 <!-- Actions to render on the right of the footer -->
