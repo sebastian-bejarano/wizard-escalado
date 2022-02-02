@@ -38,4 +38,7 @@
   <servlet name="pluginUI" class="com.segurosbolivar.plugins.PluginServlet" key="pluginUI">
     <url-pattern>/pluginUI</url-pattern>
   </servlet>
+  <servlet name="secondStep" class="com.segurosbolivar.plugins.SecondStep" key="secondStep">
+    <url-pattern>/pluginUI/secondStep</url-pattern>
+  </servlet>
 </atlassian-plugin>
