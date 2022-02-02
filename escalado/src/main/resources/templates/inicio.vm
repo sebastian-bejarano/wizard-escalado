@@ -4,11 +4,11 @@
         $webResourceManager.requireResourcesForContext("atl.general")        
     </head>
     <body>        
-        <h2>Seleccione el origen del defecto a escalar</h2>
+        <h2>Seleccione el origen del escalado</h2>
         <form action="/secondStep" action="POST">
             <div class="groupInput">                
                 <label>
-                    <input type="radio" name="origen" value="Babysitting"/>
+                    <input type="radio" name="origen" value="Babysitting" checked/>
                     Babysitting
                 </label>
             </div>

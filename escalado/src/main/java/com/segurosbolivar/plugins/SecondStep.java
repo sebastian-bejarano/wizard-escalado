@@ -54,6 +54,7 @@ public class SecondStep extends HttpServlet {
             redirectToLogin(req,res);
             return;
         }
+        //FIN VERIFICACIÓN USUARIO LOGGEADO
         //Mapa de parámetros a renderizar
         Map<String,Object> params = new HashMap<String,Object>();
         //Colocamos el tipo de respuesta que va

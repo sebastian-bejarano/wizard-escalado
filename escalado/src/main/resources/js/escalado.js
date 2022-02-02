@@ -1,6 +1,8 @@
+//Esta función va a observar en el momento en el que se haga click al botón "ESCALAR A JIRA SOFTWARE" para verificar la cajita y jugar con ella
 const click_function = () => {
     observer.observe(document.querySelector("#jira"), { subtree: false, childList: true });
 }
+//Esta función va a ser el primer callback que tenga la página después de esperar unos segundos a que cargue
 const callback = () => {
     //Se busca el elemento botón en el dom para ver que esté
     let boton = document.querySelector("#mi-item-link");
@@ -8,8 +10,11 @@ const callback = () => {
     boton.onclick = click_function;
 }
 
+//Esta función va a verificar siempre que la ventana esté en el tamaño correcto para el plugin
 const window_callback = () => {
+    //Colocamos un timer de 50ms para esperar a que aparezca la ventana
     setTimeout(function(){
+        //Con ayuda de jQuery vamos a ajustar el CSS de la ventana
         $("#mi-item-link-dialog").css(
             {
                 "width":"50%",
@@ -17,27 +22,38 @@ const window_callback = () => {
             }
         );
     },50);
-}
-
-const first_window_callback = () =>{
-    $("#mi-item-link-dialog").css(
-        {
-            "width":"50%",
-            "transform":"translate(-23%, -50%)"
-        }
-    );
-    $(".groupInput").css(
-        {
-            "border":"1px solid black",
-            "width":"20%",
-            "margin-left":"auto",
-            "margin-right":"auto"
-        }
-    );
+    //Adjuntamos un método al botón cerrar
     $("#closeBtn").click(() => {
         $("#mi-item-link-dialog").remove();
         $(".aui-blanket").remove();
     });
+    //Hacemos que el botón submit llame al callback de la ventana
+    const submitBtn = document.querySelector("#submitBtn");
+    submitBtn.onclick = window_callback;
+}
+//Esta es la función que se va a llamar la primera vez que se abra la ventana al darle click
+const first_window_callback = () =>{
+    //Con ayuda de jQuery ajustamos el css de la ventana
+    $("#mi-item-link-dialog").css(
+        {
+            "width":"18%",
+            "transform":"translate(5%, -50%)"
+        }
+    );
+    //Ahora ajustamos el CSS de los labels para que queden centrados
+    $(".groupInput").css(
+        {
+            "width":"30%",
+            "margin-left":"auto",
+            "margin-right":"auto"
+        }
+    );
+    //Adjuntamos un método al botón cerrar para que remueva el diálogo y sus child nodes además del fondo negro
+    $("#closeBtn").click(() => {
+        $("#mi-item-link-dialog").remove();
+        $(".aui-blanket").remove();
+    });
+    //Hacemos que el botón submit llame al callback de la ventana
     const submitBtn = document.querySelector("#submitBtn");
     submitBtn.onclick = window_callback;
 }
