@@ -18,10 +18,10 @@ const window_callback = () => {
         $("#mi-item-link-dialog").css(
             {
                 "width":"50%",
-                "transform":"translate(-23%, -50%)"
+                "transform":"translate(-19%, -50%)"
             }
         );
-    },50);
+    },25);
     //Adjuntamos un método al botón cerrar
     $("#closeBtn").click(() => {
         $("#mi-item-link-dialog").remove();
@@ -29,6 +29,7 @@ const window_callback = () => {
     });
     //Hacemos que el botón submit llame al callback de la ventana
     const submitBtn = document.querySelector("#submitBtn");
+    console.log(submitBtn);
     submitBtn.onclick = window_callback;
 }
 //Esta es la función que se va a llamar la primera vez que se abra la ventana al darle click
@@ -37,7 +38,7 @@ const first_window_callback = () =>{
     $("#mi-item-link-dialog").css(
         {
             "width":"18%",
-            "transform":"translate(5%, -50%)"
+            "transform":"translate(20%, -50%)"
         }
     );
     //Ahora ajustamos el CSS de los labels para que queden centrados
@@ -63,7 +64,7 @@ const observer = new MutationObserver(function(mutations_list) {
    			if(added_node.id == 'mi-item-link-dialog') {
    				console.log('mi-item-link-dialog has been added');
    				$("#mi-item-link-dialog").ready(()=>{
-                    setTimeout(first_window_callback,100);
+                    setTimeout(first_window_callback,300);
    				});
    				observer.disconnect();
    			}

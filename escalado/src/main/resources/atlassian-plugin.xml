@@ -23,7 +23,9 @@
   <web-item name="miItem" i18n-name-key="mi-item.name" key="mi-item" section="transitions-all" weight="1000">
     <!--Condición controlada por la clase para verificar que el issueType coincida con el pasado por el parámetro-->
     <condition class="com.segurosbolivar.plugins.conditions.GUIButtonCondition">
-      <param name="issueType">Task</param>
+      <param name="issueType1">Incident</param>
+      <param name="issueType2">Service Request</param>
+      <param name="permission">admin</param>
     </condition>
     <!--Descripción del web-item-->
     <description key="mi-item.description">The miItem Plugin</description>
