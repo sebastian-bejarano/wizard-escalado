@@ -6,31 +6,45 @@ const click_function = () => {
 const callback = () => {
     //Se busca el elemento botón en el dom para ver que esté
     let boton = document.querySelector("#mi-item-link");
-    //Le añadimos una función click;
-    boton.onclick = click_function;
+    if(boton){
+        //Le añadimos una función click;
+        boton.onclick = click_function;
+    }
+}
+//callback para el boton de submit
+
+const submitBtn_callback = () => {
+//Con ayuda de jQuery vamos a ajustar el CSS de la ventana
+    setTimeout(function(){
+        window_callback();
+    },50);
 }
 
+//Callback para el boton de cerrar
+const closeBtn_callback = () => {
+    setTimeout(function(){
+        //Adjuntamos un método al botón cerrar para que remueva el diálogo y sus child nodes además del fondo negro
+        $("#mi-item-link-dialog").remove();
+        $(".aui-blanket").remove();
+    },50);
+}
 //Esta función va a verificar siempre que la ventana esté en el tamaño correcto para el plugin
 const window_callback = () => {
+    console.log("Acá se configura el timer");
     //Colocamos un timer de 50ms para esperar a que aparezca la ventana
     setTimeout(function(){
-        //Con ayuda de jQuery vamos a ajustar el CSS de la ventana
         $("#mi-item-link-dialog").css(
             {
                 "width":"50%",
-                "transform":"translate(-19%, -50%)"
+                "transform":"translate(-9%, -50%)"
             }
         );
-    },25);
-    //Adjuntamos un método al botón cerrar
-    $("#closeBtn").click(() => {
-        $("#mi-item-link-dialog").remove();
-        $(".aui-blanket").remove();
-    });
-    //Hacemos que el botón submit llame al callback de la ventana
-    const submitBtn = document.querySelector("#submitBtn");
-    console.log(submitBtn);
-    submitBtn.onclick = window_callback;
+        //agregamos el callback al botón cerrar
+        document.querySelector("#closeBtn").onclick = closeBtn_callback;
+        //Hacemos que el botón submit llame al callback de la ventana
+        const submitBtn = document.querySelector("#submitBtn");
+        submitBtn.onclick = submitBtn_callback;
+    },300);
 }
 //Esta es la función que se va a llamar la primera vez que se abra la ventana al darle click
 const first_window_callback = () =>{
@@ -50,13 +64,10 @@ const first_window_callback = () =>{
         }
     );
     //Adjuntamos un método al botón cerrar para que remueva el diálogo y sus child nodes además del fondo negro
-    $("#closeBtn").click(() => {
-        $("#mi-item-link-dialog").remove();
-        $(".aui-blanket").remove();
-    });
+    document.querySelector("#closeBtn").onclick = closeBtn_callback;
     //Hacemos que el botón submit llame al callback de la ventana
     const submitBtn = document.querySelector("#submitBtn");
-    submitBtn.onclick = window_callback;
+    submitBtn.onclick = submitBtn_callback;
 }
 const observer = new MutationObserver(function(mutations_list) {
    	mutations_list.forEach(function(mutation) {

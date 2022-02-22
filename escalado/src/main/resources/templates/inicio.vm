@@ -5,7 +5,7 @@
     </head>
     <body>        
         <h2>Seleccione el origen del escalado</h2>
-        <form action="/secondStep" action="POST">
+        <form action="/secondStep" method="GET">
             <div class="groupInput">                
                 <label>
                     <input type="radio" name="origen" value="Babysitting" checked/>

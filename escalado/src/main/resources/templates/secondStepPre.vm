@@ -4,8 +4,16 @@
         $webResourceManager.requireResourcesForContext("atl.general")        
     </head>
     <body>        
-        <h2>¿Desea escalar el proyecto a estabilización?</h2>
-        <form action="/thirdStep" action="POST">            
+        <h2>¿A cuál proyecto de estabilización desea escalar?</h2>
+        <form action="/thirdStep" method="POST">
+            <label>Seleccione el proyecto</label>
+            <select name="proyecto">
+                #foreach ($project in $projects)
+                    #if(($project.getName().toLowerCase().contains("estabilización") || $project.getName().toLowerCase().contains("estabilizacion")))
+                        <option value="$project.getKey()">$project.getName()</option>
+                    #end
+                #end
+            </select>
             <!-- Dialog footer -->
             <footer class="aui-dialog2-footer">
                 <!-- Actions to render on the right of the footer -->

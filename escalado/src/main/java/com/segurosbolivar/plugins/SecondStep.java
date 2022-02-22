@@ -1,5 +1,8 @@
 package com.segurosbolivar.plugins;
 
+import com.atlassian.jira.bc.project.ProjectService;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.project.Project;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserManager;
@@ -10,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SecondStep extends HttpServlet {
@@ -36,16 +39,20 @@ public class SecondStep extends HttpServlet {
     @ComponentImport
     private final PageBuilderService pageBuilderService;
 
+    @ComponentImport
+    private final ProjectService projectService;
+
     @Inject
-    public SecondStep(UserManager userManager, LoginUriProvider loginUriProvider, TemplateRenderer templateRenderer, PageBuilderService pageBuilderService){
+    public SecondStep(UserManager userManager, LoginUriProvider loginUriProvider, TemplateRenderer templateRenderer, PageBuilderService pageBuilderService, ProjectService projectService){
         this.userManager = userManager;
         this.loginUriProvider = loginUriProvider;
         this.templateRenderer = templateRenderer;
         this.pageBuilderService = pageBuilderService;
+        this.projectService = projectService;
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException{
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException{
         //Se obtiene información sobre el usuario que realiza la petición
         UserProfile user = userManager.getRemoteUser(req);
         String userName = user.getUsername();
@@ -55,8 +62,13 @@ public class SecondStep extends HttpServlet {
             return;
         }
         //FIN VERIFICACIÓN USUARIO LOGGEADO
+
         //Mapa de parámetros a renderizar
         Map<String,Object> params = new HashMap<String,Object>();
+        //Obtenemos todos los proyectos
+        List<Project> proyectos = projectService.getAllProjects(ComponentAccessor.getUserManager().getUserByName(userName)).getReturnedValue();
+        params.put("projects", proyectos);
+
         //Colocamos el tipo de respuesta que va
         res.setContentType("text/html; charset=utf-8");
         //Verificamos el valor del parámetro origen
@@ -72,7 +84,11 @@ public class SecondStep extends HttpServlet {
             default:
                 res.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
-        res.getWriter().write("HELLO THERE!");
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
     }
 
     private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException
