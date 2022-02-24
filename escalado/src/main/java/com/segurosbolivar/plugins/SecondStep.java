@@ -52,23 +52,25 @@ public class SecondStep extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException{
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         //Se obtiene información sobre el usuario que realiza la petición
         UserProfile user = userManager.getRemoteUser(req);
         String userName = user.getUsername();
 
-        if(userName == null){
-            redirectToLogin(req,res);
+        if (userName == null) {
+            redirectToLogin(req, res);
             return;
         }
         //FIN VERIFICACIÓN USUARIO LOGGEADO
 
+        //Obtenemos el issuekey
+        String issueKey = req.getParameter("issueKey");
         //Mapa de parámetros a renderizar
-        Map<String,Object> params = new HashMap<String,Object>();
+        Map<String, Object> params = new HashMap<String, Object>();
         //Obtenemos todos los proyectos
         List<Project> proyectos = projectService.getAllProjects(ComponentAccessor.getUserManager().getUserByName(userName)).getReturnedValue();
         params.put("projects", proyectos);
-
+        params.put("issueKey", issueKey);
         //Colocamos el tipo de respuesta que va
         res.setContentType("text/html; charset=utf-8");
         //Verificamos el valor del parámetro origen
@@ -84,11 +86,6 @@ public class SecondStep extends HttpServlet {
             default:
                 res.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
     }
 
     private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException

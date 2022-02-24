@@ -52,8 +52,8 @@ public class PluginServlet extends HttpServlet {
         Map<String,Object> params = new HashMap<String,Object>();
         //Se obtiene información sobre el usuario que realiza la petición
         UserProfile user = userManager.getRemoteUser(req);
-
-
+        String issueKey = req.getParameter("issueKey");
+        params.put("issueKey", issueKey);
         String userName = user.getUsername();
 
         if(userName == null){

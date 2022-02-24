@@ -5,7 +5,13 @@
     </head>
     <body>        
         <h2>¿A cuál proyecto de estabilización desea escalar?</h2>
-        <form action="/thirdStep" method="POST">
+        <form action="/plugins/servlet/pluginUI/thirdStep" method="POST">
+            <div class="groupInput">
+                <label>
+                    Issue a escalar
+                    <input type="text" name="issueKey" value="$issueKey" readonly/>
+                </label>
+            </div>
             <label>Seleccione el proyecto</label>
             <select name="proyecto">
                 #foreach ($project in $projects)

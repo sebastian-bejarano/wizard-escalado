@@ -58,7 +58,7 @@ const first_window_callback = () =>{
     //Ahora ajustamos el CSS de los labels para que queden centrados
     $(".groupInput").css(
         {
-            "width":"30%",
+            "width":"40%",
             "margin-left":"auto",
             "margin-right":"auto"
         }

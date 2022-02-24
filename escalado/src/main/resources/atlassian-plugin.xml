@@ -24,7 +24,7 @@
     <!--Condición controlada por la clase para verificar que el issueType coincida con el pasado por el parámetro-->
     <condition class="com.segurosbolivar.plugins.conditions.GUIButtonCondition">
       <param name="issueType1">Incident</param>
-      <param name="issueType2">Service Request</param>
+      <param name="issueType2">Task</param>
       <param name="grupo">Permisos para escalar</param>
     </condition>
     <!--Descripción del web-item-->
@@ -32,7 +32,7 @@
     <!--Label tomado de escalado.properties en la estructura de carpetas-->
     <label key="mi-item.label"/>
     <!--Link con el que funcionará el botón de "Escalado"-->
-    <link linkId="mi-item-link">/plugins/servlet/pluginUI</link>
+    <link linkId="mi-item-link">/plugins/servlet/pluginUI?issueKey=$issue.getKey()</link>
     <!--ABRE EL LINK DEL SERVLET EN CUADRO DE DIÁLOGO-->
     <styleClass>trigger-dialog</styleClass>
   </web-item>
@@ -42,5 +42,8 @@
   </servlet>
   <servlet name="secondStep" class="com.segurosbolivar.plugins.SecondStep" key="secondStep">
     <url-pattern>/pluginUI/secondStep</url-pattern>
+  </servlet>
+  <servlet name="secondStep" class="com.segurosbolivar.plugins.ThirdStep" key="thirdStep">
+    <url-pattern>/pluginUI/thirdStep</url-pattern>
   </servlet>
 </atlassian-plugin>
