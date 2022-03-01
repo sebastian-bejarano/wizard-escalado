@@ -4,33 +4,17 @@
         $webResourceManager.requireResourcesForContext("atl.general")
     </head>
     <body>
-        <h2>Creación del ESTCORE</h2>
-        <form action="/plugins/servlet/pluginUI/fifthStep" method="post">
-            <label class="groupInput">
-                <span>Issue a escalar</span>
-                <input type="text" readonly name="issueKey" value="$issue.getKey() / $issue.getSummary()"/>
-            </label>
-            <label class="groupInput">
-                <span>Problem relacionado</span>
-                <input type="text" readonly name="issueKey" value="$problem.getKey() / $problem.getSummary()"/>
-            </label>
-            <label class="groupInput">
-                <span>Proyecto al que se escalará</span>
-                <input type="text" readonly name="issueKey" value="$project"/>
-            </label>
-            <!-- Dialog footer -->
-            <footer class="aui-dialog2-footer">
-                <!-- Actions to render on the right of the footer -->
-                <div class="aui-dialog2-footer-actions">
-                    <input type="submit" id="submitBtn" class="aui-button aui-button-primary" value="Siguiente"/>
-                    <button type ="button" class="aui-button aui-button-link" id="closeBtn">Close</button>
-                </div>
-                <!-- Hint text is rendered on the left of the footer -->
-                <div class="aui-dialog2-footer-hint">Confirme la información.</div>
-            </footer>
-            <!--<div class="aui-dialog2-footer-actions">
-                <input type="submit" class="aui-button aui-button-primary" style="left:50%;" value="Finalizar"/>
-            </div>-->
-        <form>
+        <h2>Finalización</h2>
+        <span>$mensaje</span>
+        <span>$issueType</span>
+        <span>$cfValue</span>
+        <footer class="aui-dialog2-footer">
+            <!-- Actions to render on the right of the footer -->
+            <div class="aui-dialog2-footer-actions">
+                <button type ="button" class="aui-button aui-button-primary" id="closeBtn">Finalizar</button>
+            </div>
+            <!-- Hint text is rendered on the left of the footer -->
+            <div class="aui-dialog2-footer-hint">Confirme la información.</div>
+        </footer>
     </body>
 </html>

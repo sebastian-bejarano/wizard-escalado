@@ -68,11 +68,11 @@ public class FifthStep extends HttpServlet {
         String issueKey = issueAEscalar.split("/")[0].trim();
         String problemKey = problemAEnlazar.split("/")[0].trim();
         String projectKey = proyectoAEscalar.split("/")[0].trim();
-        templateRenderer.render("templates/fifthStep.vm", params,resp.getWriter());
         if(GJIRAUtils.relacionarIssuesConRelacionado(issueKey,problemKey,this.issueLinkService,params,this.authenticationContext)){
-            GJIRAUtils.crearIncidenteProductivoEnlazado(projectKey,issueKey,problemKey,this.authenticationContext,params,projectService,constantsManager,issueService);
-        }else{
-            params.put("errorRelacion","No se pudo hacer la relación");
+            if(GJIRAUtils.crearIncidenteProductivoEnlazado(projectKey,issueKey,problemKey,this.authenticationContext,params,projectService,constantsManager,issueService,issueLinkService,ComponentAccessor.getFieldManager())){
+                params.put("mensaje","Issue escalado con éxito");
+            }
         }
+        templateRenderer.render("templates/fifthStep.vm", params,resp.getWriter());
     }
 }

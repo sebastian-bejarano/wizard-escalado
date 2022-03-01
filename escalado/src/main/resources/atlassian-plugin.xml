@@ -43,13 +43,16 @@
   <servlet name="secondStep" class="com.segurosbolivar.plugins.SecondStep" key="secondStep">
     <url-pattern>/pluginUI/secondStep</url-pattern>
   </servlet>
-  <servlet name="secondStep" class="com.segurosbolivar.plugins.ThirdStep" key="thirdStep">
+  <servlet name="thirdStep" class="com.segurosbolivar.plugins.ThirdStep" key="thirdStep">
     <url-pattern>/pluginUI/thirdStep</url-pattern>
   </servlet>
-  <servlet name="secondStep" class="com.segurosbolivar.plugins.FourthStep" key="fourthStep">
+  <servlet name="fourthStep" class="com.segurosbolivar.plugins.FourthStep" key="fourthStep">
     <url-pattern>/pluginUI/fourthStep</url-pattern>
   </servlet>
-  <servlet name="secondStep" class="com.segurosbolivar.plugins.CreateProblem" key="createProblem">
+  <servlet name="fifthStep" class="com.segurosbolivar.plugins.FifthStep" key="fifthStep">
+    <url-pattern>/pluginUI/fifthStep</url-pattern>
+  </servlet>
+  <servlet name="createProblem" class="com.segurosbolivar.plugins.CreateProblem" key="createProblem">
     <url-pattern>/pluginUI/createProblem</url-pattern>
   </servlet>
 </atlassian-plugin>

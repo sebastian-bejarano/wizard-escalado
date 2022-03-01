@@ -20,6 +20,7 @@ import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
+import com.atlassian.jira.issue.fields.FieldManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +101,7 @@ public class GJIRAUtils {
         }
     }
 
-    public static boolean crearIncidenteProductivoEnlazado(String projectKey, String mainIssueKey,String problemKey, JiraAuthenticationContext authenticationContext, Map params, ProjectService projectService, ConstantsManager constantsManager, IssueService issueService){
+    public static boolean crearIncidenteProductivoEnlazado(String projectKey, String mainIssueKey,String problemKey, JiraAuthenticationContext authenticationContext, Map params, ProjectService projectService, ConstantsManager constantsManager, IssueService issueService, IssueLinkService issueLinkService, FieldManager fieldManager){
         //Traemos el usuario que se encuentra loggeado actualmente
         ApplicationUser user = authenticationContext.getLoggedInUser();
         //Obtenemos el proyecto al que se va a escalar
@@ -111,23 +112,31 @@ public class GJIRAUtils {
         Issue problem = issueService.getIssue(user,problemKey).getIssue();
 
         IssueType incidenteIssueType = constantsManager.getAllIssueTypeObjects().stream().filter(
-                issueType -> issueType.getName().equalsIgnoreCase("Incidente Productivo")
-        ).findFirst().orElse(null);
+                issueType -> issueType.getName().equalsIgnoreCase("Incidente Productivo")).findFirst().orElse(null);
+        try {
+            IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
+            issueInputParameters.setSummary(problem.getSummary())
+                    .setIssueTypeId(incidenteIssueType.getId())
+                    .setReporterId(user.getName())
+                    .addCustomFieldValue("customfield_15104", "https://jira.segurosbolivar.com/browse/"+mainIssueKey)
+                    .addCustomFieldValue("customfield_18009", problem.getCustomFieldValue(fieldManager.getCustomField("customfield_18009")).toString())
+                    .setDescription(problem.getDescription())
+                    .setProjectId(project.getId());
 
-        IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
-        issueInputParameters.setSummary(problem.getSummary())
-                            .setIssueTypeId(incidenteIssueType.getId())
-                            .addCustomFieldValue("cf[18009]",problem.getCustomFieldValue(ComponentAccessor.getCustomFieldManager().getCustomFieldObject(18009l)).toString())
-                            .setDescription(problem.getDescription());
+            IssueService.CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
 
-        IssueService.CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
-
-        if(result.getErrorCollection().hasAnyErrors()){
-            return false;
+            if (result.getErrorCollection().hasAnyErrors()) {
+                params.put("mensaje", result.getErrorCollection());
+                return false;
+            } else {
+                Issue nuevoIncidente = issueService.create(user, result).getIssue();
+                GJIRAUtils.relacionarIssuesConRelacionado(mainIssue.getKey(), nuevoIncidente.getKey(), issueLinkService, params, authenticationContext);
+                return true;
+            }
         }
-        else{
-            issueService.create(user,result);
-            return true;
+        catch(Exception ex){
+            params.put("mensaje", ex.toString());
+            return false;
         }
     }
 }
