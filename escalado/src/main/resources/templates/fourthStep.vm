@@ -6,10 +6,7 @@
     <body>
         <h2>Creación del ESTCORE</h2>
         <form action="/plugins/servlet/pluginUI/fifthStep" method="post">
-            $issueLink.getIssueLinkType().getName()
-            $issue.getId()
-            $problem.getId()
-            $errors
+
             <!-- Dialog footer -->
             <footer class="aui-dialog2-footer">
                 <!-- Actions to render on the right of the footer -->
@@ -21,7 +18,7 @@
                 <div class="aui-dialog2-footer-hint">Seleccione si desea escalar el issue a estabilización.</div>
             </footer>
             <!--<div class="aui-dialog2-footer-actions">
-                <input type="submit" class="aui-button aui-button-primary" style="left:50%;" value="Siguiente"/>
+                <input type="submit" class="aui-button aui-button-primary" style="left:50%;" value="Finalizar"/>
             </div>-->
         <form>
     </body>
