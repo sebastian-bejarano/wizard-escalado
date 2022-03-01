@@ -4,14 +4,32 @@
         $webResourceManager.requireResourcesForContext("atl.general")
     </head>
     <body>
-        <h2>Seleccione el problem</h2>
-        <form action="/fourthStep">
-            <label>Seleccione de la Lista de problems</label>
-            <label>$problems</label>
+        <h2>Seleccione de la lista el Problem o cree uno nuevo</h2>
+        <form action="/plugins/servlet/pluginUI/fourthStep" method="POST">
+            <div class="groupInput">
+                <label>
+                    Proyecto donde se escalará <input type="text" readonly name="proyecto" value="$proyectoAEscalar.getKey() / $proyectoAEscalar.getName()"/>
+                </label>
+            </div>
+            <div class="groupInput">
+                <label>
+                    Incident que se escalará <input type="text" readonly name="issueKey" value="$issueKey"/>
+                </label>
+            </div>
+            <div class="groupInput">
+                <label>Seleccione el problem
+                    <select name="problem">
+                        #foreach ($problem in $problems)
+                            <option value="$problem.getKey()">$problem.getKey() - $problem.getSummary()</option>
+                        #end
+                    </select>
+                </label>
+            </div>
             <!-- Dialog footer -->
             <footer class="aui-dialog2-footer">
                 <!-- Actions to render on the right of the footer -->
                 <div class="aui-dialog2-footer-actions">
+                    <input type="submit" id="submitBtn" class="aui-button" value="Crear Problem" formaction="/plugins/servlet/pluginUI/createProblem"/>
                     <input type="submit" id="submitBtn" class="aui-button aui-button-primary" value="Siguiente"/>
                     <button type ="button" class="aui-button aui-button-link" id="closeBtn">Close</button>
                 </div>
