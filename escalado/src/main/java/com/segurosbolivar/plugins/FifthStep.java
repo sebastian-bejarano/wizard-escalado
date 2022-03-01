@@ -47,10 +47,17 @@ public class FifthStep extends HttpServlet {
         //Creamos un mapa de Hash para inyectar parámetros que serán enviados a velocity
         Map<String,Object> params = new HashMap<String,Object>();
         //Obtenemos los parámetros que vienen en el request
-        String proyectoAEscalar = req.getParameter("proyecto");
-        String issueAEscalar = req.getParameter("issueKey");
+        String proyectoAEscalar = req.getParameter("project");
+        String issueAEscalar = req.getParameter("issue");
         String problemAEnlazar = req.getParameter("problem");
+        String issueKey = issueAEscalar.split("/")[0].trim();
+        String problemKey = problemAEnlazar.split("/")[0].trim();
+        String projectKey = proyectoAEscalar.split("/")[0].trim();
         templateRenderer.render("templates/fifthStep.vm", params,resp.getWriter());
-        GJIRAUtils
+        if(GJIRAUtils.relacionarIssuesConRelacionado(issueKey,problemKey,issueLinkService,params,authenticationContext)){
+
+        }else{
+
+        }
     }
 }

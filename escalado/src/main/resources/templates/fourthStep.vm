@@ -8,15 +8,15 @@
         <form action="/plugins/servlet/pluginUI/fifthStep" method="post">
             <label class="groupInput">
                 <span>Issue a escalar</span>
-                <input type="text" readonly name="issueKey" value="$issue.getKey() / $issue.getSummary()"/>
+                <input type="text" readonly name="issue" value="$issue.getKey() / $issue.getSummary()"/>
             </label>
             <label class="groupInput">
                 <span>Problem relacionado</span>
-                <input type="text" readonly name="issueKey" value="$problem.getKey() / $problem.getSummary()"/>
+                <input type="text" readonly name="problem" value="$problem.getKey() / $problem.getSummary()"/>
             </label>
             <label class="groupInput">
                 <span>Proyecto al que se escalará</span>
-                <input type="text" readonly name="issueKey" value="$project"/>
+                <input type="text" readonly name="project" value="$project"/>
             </label>
             <!-- Dialog footer -->
             <footer class="aui-dialog2-footer">

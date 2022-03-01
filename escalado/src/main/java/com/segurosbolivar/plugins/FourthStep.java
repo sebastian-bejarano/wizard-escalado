@@ -64,7 +64,6 @@ public class FourthStep extends HttpServlet {
         params.put("issue",issue);
         params.put("problem",problem);
         params.put("project",proyectoAEscalar);
-
         templateRenderer.render("templates/fourthStep.vm", params,resp.getWriter());
     }
 }

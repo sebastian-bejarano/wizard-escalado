@@ -65,7 +65,7 @@ public class ThirdStep extends HttpServlet {
         //Fin de obtención del campo categoría Item
         try {
             //Se obtiene la lista de issues con esas carcaterísticas
-            List<Issue> problemsConEseCategoriaItem = getIssuesByTypeAndCategoriaItem("PPP","Problem",categoria_item);
+            List<Issue> problemsConEseCategoriaItem = GJIRAUtils.getIssuesByTypeAndCategoriaItem("PPP","Problem",categoria_item,authenticationContext,searchService);
             params.put("problems",problemsConEseCategoriaItem);
             params.put("issueKey",mainIssueKey);
             params.put("proyectoAEscalar",proyecto);
@@ -81,47 +81,5 @@ public class ThirdStep extends HttpServlet {
         return (s == null || s.length() == 0)
                 ? null
                 : (s.substring(0, s.length() - 1));
-    }
-
-    private List<Issue> getIssues(String proyecto) throws SearchException{
-        //Se obtiene el usuario actual para que se haga la búsqueda con los permisos que tenga
-        ApplicationUser user = this.authenticationContext.getLoggedInUser();
-        //Se crea una nueva cláusula de JQL
-        JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
-        //De acuerdo a la cláusula de JQL se hace un nuevo Query que se crea a partir de los métodos del ClauseBuilder
-        Query query = jqlClauseBuilder.project(proyecto).buildQuery();
-        //Hacemos una lista no paginada
-        PagerFilter pagerFilter = PagerFilter.getUnlimitedFilter();
-        //Finalmente se obtienen los resultados o se devuelve null
-        SearchResults searchResults = this.searchService.search(user, query, pagerFilter);
-        return searchResults != null ? searchResults.getResults() : null;
-    }
-
-    private List<Issue> getIssuesByType(String proyecto, String issueType) throws SearchException{
-        //Se obtiene el usuario actual para que se haga la búsqueda con los permisos que tenga
-        ApplicationUser user = this.authenticationContext.getLoggedInUser();
-        //Se crea una nueva cláusula de JQL
-        JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
-        //De acuerdo a la cláusula de JQL se hace un nuevo Query que se crea a partir de los métodos del ClauseBuilder, teniendo en cuenta issueType y Proyecto
-        Query query = jqlClauseBuilder.project(proyecto).and().issueType(issueType).buildQuery();
-        //Hacemos una lista no paginada
-        PagerFilter pagerFilter = PagerFilter.getUnlimitedFilter();
-        //Finalmente se obtienen los resultados o se devuelve null
-        SearchResults searchResults = this.searchService.search(user, query, pagerFilter);
-        return searchResults != null ? searchResults.getResults() : null;
-    }
-
-    private List<Issue> getIssuesByTypeAndCategoriaItem(String proyecto, String issueType, String[] categoriaItem) throws SearchException{
-        //Se obtiene el usuario actual para que se haga la búsqueda con los permisos que tenga
-        ApplicationUser user = this.authenticationContext.getLoggedInUser();
-        //Se crea una nueva cláusula de JQL
-        JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
-        //De acuerdo a la cláusula de JQL se hace un nuevo Query que se crea a partir de los métodos del ClauseBuilder, teniendo encuenta issueType, proyecto y Categoría / Item configuración
-        Query query = jqlClauseBuilder.project(proyecto).and().issueType(issueType).and().field("cf[10409]").in().functionCascaingOption(categoriaItem[0],categoriaItem[1]).buildQuery();
-        //Hacemos una lista no paginada
-        PagerFilter pagerFilter = PagerFilter.getUnlimitedFilter();
-        //Finalmente se obtienen los resultados o se devuelve null
-        SearchResults searchResults = this.searchService.search(user, query, pagerFilter);
-        return searchResults != null ? searchResults.getResults() : null;
     }
 }
