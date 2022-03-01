@@ -65,7 +65,7 @@ public class ThirdStep extends HttpServlet {
         //Fin de obtención del campo categoría Item
         try {
             //Se obtiene la lista de issues con esas carcaterísticas
-            List<Issue> problemsConEseCategoriaItem = getIssuesByTypeAndCategoriaItem("MDSB","Problem",categoria_item);
+            List<Issue> problemsConEseCategoriaItem = getIssuesByTypeAndCategoriaItem("PPP","Problem",categoria_item);
             params.put("problems",problemsConEseCategoriaItem);
             params.put("issueKey",mainIssueKey);
             params.put("proyectoAEscalar",proyecto);

@@ -2,11 +2,9 @@ package com.segurosbolivar.plugins;
 
 import com.atlassian.jira.bc.issue.link.IssueLinkService;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.Direction;
 import com.atlassian.jira.issue.link.IssueLink;
-import com.atlassian.jira.issue.link.IssueLinkCreator;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
@@ -22,7 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FourthStep extends HttpServlet {
+public class FifthStep extends HttpServlet {
 
     //Se utiliza para obrener el usuario que está loggeado actualmente
     @ComponentImport
@@ -38,13 +36,12 @@ public class FourthStep extends HttpServlet {
 
     //Constructor con inyección de dependencias
     @Inject
-    public FourthStep(TemplateRenderer templateRenderer, JiraAuthenticationContext authenticationContext, IssueLinkService issueLinkService){
+    public FifthStep(TemplateRenderer templateRenderer, JiraAuthenticationContext authenticationContext, IssueLinkService issueLinkService){
         this.templateRenderer = templateRenderer;
         this.authenticationContext = authenticationContext;
         this.issueLinkService = issueLinkService;
     }
 
-    //Handler del método POST en el servlet
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //Creamos un mapa de Hash para inyectar parámetros que serán enviados a velocity
@@ -53,18 +50,7 @@ public class FourthStep extends HttpServlet {
         String proyectoAEscalar = req.getParameter("proyecto");
         String issueAEscalar = req.getParameter("issueKey");
         String problemAEnlazar = req.getParameter("problem");
-        //Obtenemos el issue que vamos a escalar (Que debería ser en este momento tipo incident)
-        Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueAEscalar);
-        //Obtenemos el issue tipo problem con el cuál se va a enlazar
-        Issue problem = ComponentAccessor.getIssueManager().getIssueByCurrentKey(problemAEnlazar);
-        //Código del issueLink "Relacionado"
-        //Obtenemos el objeto IssueLink
-        IssueLink link = ComponentAccessor.getIssueLinkManager().getIssueLink(274416l);
-        //Colocamos los parámetros en el mapa hash para que sean enviados al template de velocity
-        params.put("issue",issue);
-        params.put("problem",problem);
-        params.put("project",proyectoAEscalar);
-
-        templateRenderer.render("templates/fourthStep.vm", params,resp.getWriter());
+        templateRenderer.render("templates/fifthStep.vm", params,resp.getWriter());
+        GJIRAUtils
     }
 }
