@@ -1,7 +1,10 @@
 package com.segurosbolivar.plugins;
 
+import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.link.IssueLinkService;
+import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.Direction;
 import com.atlassian.jira.issue.link.IssueLink;
@@ -34,12 +37,24 @@ public class FifthStep extends HttpServlet {
     @ComponentImport
     private final TemplateRenderer templateRenderer;
 
+    @ComponentImport
+    private final ProjectService projectService;
+
+    @ComponentImport
+    private final ConstantsManager constantsManager;
+
+    @ComponentImport
+    private final IssueService issueService;
+
     //Constructor con inyección de dependencias
     @Inject
-    public FifthStep(TemplateRenderer templateRenderer, JiraAuthenticationContext authenticationContext, IssueLinkService issueLinkService){
+    public FifthStep(TemplateRenderer templateRenderer, JiraAuthenticationContext authenticationContext, IssueLinkService issueLinkService, ProjectService projectService, ConstantsManager constantsManager, IssueService issueService){
         this.templateRenderer = templateRenderer;
         this.authenticationContext = authenticationContext;
         this.issueLinkService = issueLinkService;
+        this.projectService = projectService;
+        this.constantsManager = constantsManager;
+        this.issueService = issueService;
     }
 
     @Override
@@ -54,10 +69,10 @@ public class FifthStep extends HttpServlet {
         String problemKey = problemAEnlazar.split("/")[0].trim();
         String projectKey = proyectoAEscalar.split("/")[0].trim();
         templateRenderer.render("templates/fifthStep.vm", params,resp.getWriter());
-        if(GJIRAUtils.relacionarIssuesConRelacionado(issueKey,problemKey,issueLinkService,params,authenticationContext)){
-
+        if(GJIRAUtils.relacionarIssuesConRelacionado(issueKey,problemKey,this.issueLinkService,params,this.authenticationContext)){
+            GJIRAUtils.crearIncidenteProductivoEnlazado(projectKey,issueKey,problemKey,this.authenticationContext,params,projectService,constantsManager,issueService);
         }else{
-
+            params.put("errorRelacion","No se pudo hacer la relación");
         }
     }
 }

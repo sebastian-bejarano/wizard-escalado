@@ -1,15 +1,21 @@
 package com.segurosbolivar.plugins;
 
+import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.link.IssueLinkService;
 import com.atlassian.jira.bc.issue.search.SearchService;
+import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueInputParameters;
+import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.Direction;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.issue.search.SearchResults;
 import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
+import com.atlassian.jira.project.Project;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
@@ -90,6 +96,37 @@ public class GJIRAUtils {
         else{
             //En caso contrario hacemos el link del issue
             issueLinkService.addIssueLinks(currentUser,result);
+            return true;
+        }
+    }
+
+    public static boolean crearIncidenteProductivoEnlazado(String projectKey, String mainIssueKey,String problemKey, JiraAuthenticationContext authenticationContext, Map params, ProjectService projectService, ConstantsManager constantsManager, IssueService issueService){
+        //Traemos el usuario que se encuentra loggeado actualmente
+        ApplicationUser user = authenticationContext.getLoggedInUser();
+        //Obtenemos el proyecto al que se va a escalar
+        Project project = projectService.getProjectByKey(user, projectKey).getProject();
+        //Obtenemos el mainIssue que va a ser escalado
+        Issue mainIssue = issueService.getIssue(user,mainIssueKey).getIssue();
+        //Obtenemos el problem al que se va a relacionar
+        Issue problem = issueService.getIssue(user,problemKey).getIssue();
+
+        IssueType incidenteIssueType = constantsManager.getAllIssueTypeObjects().stream().filter(
+                issueType -> issueType.getName().equalsIgnoreCase("Incidente Productivo")
+        ).findFirst().orElse(null);
+
+        IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
+        issueInputParameters.setSummary(problem.getSummary())
+                            .setIssueTypeId(incidenteIssueType.getId())
+                            .addCustomFieldValue("cf[18009]",problem.getCustomFieldValue(ComponentAccessor.getCustomFieldManager().getCustomFieldObject(18009l)).toString())
+                            .setDescription(problem.getDescription());
+
+        IssueService.CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
+
+        if(result.getErrorCollection().hasAnyErrors()){
+            return false;
+        }
+        else{
+            issueService.create(user,result);
             return true;
         }
     }
