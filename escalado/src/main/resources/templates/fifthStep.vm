@@ -6,8 +6,8 @@
     <body>
         <h2>Finalización</h2>
         <span>$mensaje</span>
-        <span>$issueType</span>
-        <span>$cfValue</span>
+        <span>$nuevoIncidente</span>
+        <span>$validation</span>
         <footer class="aui-dialog2-footer">
             <!-- Actions to render on the right of the footer -->
             <div class="aui-dialog2-footer-actions">

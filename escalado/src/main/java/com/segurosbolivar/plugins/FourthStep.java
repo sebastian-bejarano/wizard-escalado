@@ -1,9 +1,11 @@
 package com.segurosbolivar.plugins;
 
 import com.atlassian.jira.bc.issue.link.IssueLinkService;
+import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.customfields.option.Options;
 import com.atlassian.jira.issue.link.Direction;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkCreator;
@@ -18,11 +20,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class FourthStep extends HttpServlet {
+
+    private final String MOMENTO_DEL_ERROR = "customfield_14300";
+    private final String SEVERIDAD = "customfield_10432";
+    private final String FABRICA_DESARROLLO = "customfield_15700";
+    private final String MOTIVO_ESCALAMIENTO = "customfield_14501";
 
     //Se utiliza para obrener el usuario que está loggeado actualmente
     @ComponentImport
@@ -36,12 +41,16 @@ public class FourthStep extends HttpServlet {
     @ComponentImport
     private final TemplateRenderer templateRenderer;
 
+    @ComponentImport
+    private final SearchService searchService;
+
     //Constructor con inyección de dependencias
     @Inject
-    public FourthStep(TemplateRenderer templateRenderer, JiraAuthenticationContext authenticationContext, IssueLinkService issueLinkService){
+    public FourthStep(TemplateRenderer templateRenderer, JiraAuthenticationContext authenticationContext, IssueLinkService issueLinkService, SearchService searchService){
         this.templateRenderer = templateRenderer;
         this.authenticationContext = authenticationContext;
         this.issueLinkService = issueLinkService;
+        this.searchService = searchService;
     }
 
     //Handler del método POST en el servlet
@@ -64,6 +73,22 @@ public class FourthStep extends HttpServlet {
         params.put("issue",issue);
         params.put("problem",problem);
         params.put("project",proyectoAEscalar);
+        Options momentoErrorOpciones = GJIRAUtils.getCustomFieldOptionsForIncidenteProductivo(MOMENTO_DEL_ERROR,authenticationContext,searchService,ComponentAccessor.getOptionsManager(),ComponentAccessor.getCustomFieldManager());
+        Options severidadOpciones = GJIRAUtils.getCustomFieldOptionsForIncidenteProductivo(SEVERIDAD,authenticationContext,searchService,ComponentAccessor.getOptionsManager(),ComponentAccessor.getCustomFieldManager());
+        Options fabricaDesarrolloOpciones = GJIRAUtils.getCustomFieldOptionsForIncidenteProductivo(FABRICA_DESARROLLO,authenticationContext,searchService,ComponentAccessor.getOptionsManager(),ComponentAccessor.getCustomFieldManager());
+        Options motivoEscalamientoOpciones = GJIRAUtils.getCustomFieldOptionsForIncidenteProductivo(MOTIVO_ESCALAMIENTO,authenticationContext,searchService,ComponentAccessor.getOptionsManager(),ComponentAccessor.getCustomFieldManager());
+        List<Issue> epicas = null;
+        try {
+             epicas = GJIRAUtils.getIssuesOnlyByType("Epic", authenticationContext, searchService);
+        }
+        catch(Exception ex){
+            params.put("mensaje",ex.toString());
+        }
+        params.put("epicas",epicas);
+        params.put("momentoErrorOpciones",momentoErrorOpciones);
+        params.put("severidadOpciones",severidadOpciones);
+        params.put("fabricaDesarrolloOpciones",fabricaDesarrolloOpciones);
+        params.put("motivoEscalamientoOpciones",motivoEscalamientoOpciones);
         templateRenderer.render("templates/fourthStep.vm", params,resp.getWriter());
     }
 }

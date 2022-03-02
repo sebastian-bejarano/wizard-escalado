@@ -2,6 +2,7 @@ package com.segurosbolivar.plugins;
 
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.link.IssueLinkService;
+import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
@@ -46,15 +47,19 @@ public class FifthStep extends HttpServlet {
     @ComponentImport
     private final IssueService issueService;
 
+    @ComponentImport
+    private final SearchService searchService;
+
     //Constructor con inyección de dependencias
     @Inject
-    public FifthStep(TemplateRenderer templateRenderer, JiraAuthenticationContext authenticationContext, IssueLinkService issueLinkService, ProjectService projectService, ConstantsManager constantsManager, IssueService issueService){
+    public FifthStep(TemplateRenderer templateRenderer, JiraAuthenticationContext authenticationContext, IssueLinkService issueLinkService, ProjectService projectService, ConstantsManager constantsManager, IssueService issueService, SearchService searchService){
         this.templateRenderer = templateRenderer;
         this.authenticationContext = authenticationContext;
         this.issueLinkService = issueLinkService;
         this.projectService = projectService;
         this.constantsManager = constantsManager;
         this.issueService = issueService;
+        this.searchService = searchService;
     }
 
     @Override
@@ -65,11 +70,17 @@ public class FifthStep extends HttpServlet {
         String proyectoAEscalar = req.getParameter("project");
         String issueAEscalar = req.getParameter("issue");
         String problemAEnlazar = req.getParameter("problem");
+        String prioridad = req.getParameter("prioridad");
+        String momentoError = req.getParameter("momentoError");
+        String severidad = req.getParameter("severidad");
+        String fabricaDesarrollo = req.getParameter("fabricaDesarrollo");
+        String motivoEscalamiento = req.getParameter("motivoEscalamiento");
+        String epica = req.getParameter("epica");
         String issueKey = issueAEscalar.split("/")[0].trim();
         String problemKey = problemAEnlazar.split("/")[0].trim();
         String projectKey = proyectoAEscalar.split("/")[0].trim();
         if(GJIRAUtils.relacionarIssuesConRelacionado(issueKey,problemKey,this.issueLinkService,params,this.authenticationContext)){
-            if(GJIRAUtils.crearIncidenteProductivoEnlazado(projectKey,issueKey,problemKey,this.authenticationContext,params,projectService,constantsManager,issueService,issueLinkService,ComponentAccessor.getFieldManager())){
+            if(GJIRAUtils.crearIncidenteProductivoEnlazado(projectKey,issueKey,problemKey,prioridad,momentoError,severidad,fabricaDesarrollo, motivoEscalamiento, epica,this.authenticationContext,params,projectService,constantsManager,issueService,issueLinkService,ComponentAccessor.getFieldManager(),ComponentAccessor.getCustomFieldManager(),ComponentAccessor.getOptionsManager(),searchService)){
                 params.put("mensaje","Issue escalado con éxito");
             }
         }

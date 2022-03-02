@@ -18,6 +18,54 @@
                 <span>Proyecto al que se escalará</span>
                 <input type="text" readonly name="project" value="$project"/>
             </label>
+            <label class="groupInput">
+                <span>Épica asociada</span>
+                    <select name="epica">
+                        #foreach ($epica in $epicas)
+                            <option value="$epica.getKey()">$epica.getKey() / $epica.getSummary()</option>
+                        #end
+                </select>
+            </label>
+            <label class="groupInput">
+                <span>Momento del error</span>
+                <select name="momentoError">
+                    #foreach ($option in $momentoErrorOpciones)
+                        <option value="$option.getOptionId()">$option.getValue()</option>
+                    #end
+                </select>
+            </label>
+            <label class="groupInput">
+                <span>Prioridad</span>
+                <select name="prioridad">
+                    <option value="4">Low / Baja</option>
+                    <option value="3">Medium / Media</option>
+                    <option value="2">High / Alta</option>
+                </select>
+            </label>
+            <label class="groupInput">
+                <span>Severidad</span>
+                <select name="severidad">
+                    #foreach ($option in $severidadOpciones)
+                        <option value="$option.getOptionId()">$option.getValue()</option>
+                    #end
+                </select>
+            </label>
+            <label class="groupInput">
+                <span>Fábrica de desarrollo</span>
+                <select name="fabricaDesarrollo"/>
+                    #foreach ($option in $fabricaDesarrolloOpciones)
+                        <option value="$option.getOptionId()">$option.getValue()</option>
+                    #end
+                </select>
+            </label>
+            <label class="groupInput">
+                <span>Motivo de escalamiento</span>
+                <select name="motivoEscalamiento">
+                    #foreach ($option in $motivoEscalamientoOpciones)
+                        <option value="$option.getOptionId()">$option.getValue()</option>
+                    #end
+                </select>
+            </label>
             <!-- Dialog footer -->
             <footer class="aui-dialog2-footer">
                 <!-- Actions to render on the right of the footer -->

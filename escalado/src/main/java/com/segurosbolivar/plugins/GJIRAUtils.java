@@ -6,8 +6,13 @@ import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
+import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueInputParameters;
+import com.atlassian.jira.issue.customfields.manager.OptionsManager;
+import com.atlassian.jira.issue.customfields.option.Option;
+import com.atlassian.jira.issue.customfields.option.Options;
+import com.atlassian.jira.issue.fields.CustomField;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.Direction;
 import com.atlassian.jira.issue.link.IssueLink;
@@ -19,6 +24,7 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
+import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.query.Query;
 import com.atlassian.jira.issue.fields.FieldManager;
 
@@ -27,6 +33,20 @@ import java.util.List;
 import java.util.Map;
 
 public class GJIRAUtils {
+
+    public static List<Issue> getIssuesOnlyByType(String issueType, JiraAuthenticationContext authenticationContext, SearchService searchService) throws SearchException {
+        //Se obtiene el usuario actual para que se haga la búsqueda con los permisos que tenga
+        ApplicationUser user = authenticationContext.getLoggedInUser();
+        //Se crea una nueva cláusula de JQL
+        JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
+        //De acuerdo a la cláusula de JQL se hace un nuevo Query que se crea a partir de los métodos del ClauseBuilder
+        Query query = jqlClauseBuilder.issueType(issueType).buildQuery();
+        //Hacemos una lista no paginada
+        PagerFilter pagerFilter = PagerFilter.getUnlimitedFilter();
+        //Finalmente se obtienen los resultados o se devuelve null
+        SearchResults searchResults = searchService.search(user, query, pagerFilter);
+        return searchResults != null ? searchResults.getResults() : null;
+    }
 
     public static List<Issue> getIssues(String proyecto, JiraAuthenticationContext authenticationContext, SearchService searchService) throws SearchException {
         //Se obtiene el usuario actual para que se haga la búsqueda con los permisos que tenga
@@ -101,7 +121,7 @@ public class GJIRAUtils {
         }
     }
 
-    public static boolean crearIncidenteProductivoEnlazado(String projectKey, String mainIssueKey,String problemKey, JiraAuthenticationContext authenticationContext, Map params, ProjectService projectService, ConstantsManager constantsManager, IssueService issueService, IssueLinkService issueLinkService, FieldManager fieldManager){
+    public static boolean crearIncidenteProductivoEnlazado(String projectKey, String mainIssueKey, String problemKey, String prioridad, String momentoError, String severidad, String fabricaDesarrollo, String motivoEscalamiento, String epica, JiraAuthenticationContext authenticationContext, Map params, ProjectService projectService, ConstantsManager constantsManager, IssueService issueService, IssueLinkService issueLinkService, FieldManager fieldManager, CustomFieldManager customFieldManager, OptionsManager optionsManager, SearchService searchService){
         //Traemos el usuario que se encuentra loggeado actualmente
         ApplicationUser user = authenticationContext.getLoggedInUser();
         //Obtenemos el proyecto al que se va a escalar
@@ -112,13 +132,43 @@ public class GJIRAUtils {
         Issue problem = issueService.getIssue(user,problemKey).getIssue();
         IssueType incidenteIssueType = constantsManager.getAllIssueTypeObjects().stream().filter(
                 issueType -> issueType.getName().equalsIgnoreCase("Incidente Productivo")).findFirst().orElse(null);
+        //Valor del custom field Centro de desarrollo
+        CustomField centroDesarrollo = customFieldManager.getCustomFieldObject("customfield_18009");
+        Options opcionesDisponiblesCentroDesarrollo = optionsManager.getOptions(centroDesarrollo.getRelevantConfig(problem));
+        Option opcionParaPoner = opcionesDisponiblesCentroDesarrollo.stream().filter(opcion -> opcion.getValue().equalsIgnoreCase(problem.getCustomFieldValue(fieldManager.getCustomField("customfield_18009")).toString())).findFirst().get();
+        //Valor del custom field Aplicación
+        Object categoriaItem = problem.getCustomFieldValue(ComponentAccessor.getFieldManager().getCustomField("customfield_10409"));
+        String categoriaItemString = categoriaItem.toString();
+        categoriaItemString = categoriaItemString.split(",")[0].split("=")[1] +"-"+ removeLastChar(categoriaItemString.split(",")[1].split("=")[1]);
+        String[] categoria_item = categoriaItemString.split("-");
+        CustomField aplicacion = customFieldManager.getCustomFieldObject("customfield_10414");
+        //obtenemos un issue incidente productivo cualquiera para tener la lista
+        Issue incidenteCualquiera;
+        try {
+            incidenteCualquiera = getIssuesOnlyByType("Incidente Productivo", authenticationContext, searchService).stream().findFirst().get();
+        }
+        catch(SearchException ex){
+            return false;
+        }
+        if(incidenteCualquiera == null){
+            return false;
+        }
+        Options opcionesDisponiblesAplicacion = optionsManager.getOptions(aplicacion.getRelevantConfig(incidenteCualquiera));
+        Option opcionParaAplicacion = opcionesDisponiblesAplicacion.stream().filter(opcion -> opcion.getValue().equalsIgnoreCase(categoria_item[1])).findFirst().get();
         try {
             IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
             issueInputParameters.setSummary(problem.getSummary())
                     .setIssueTypeId(incidenteIssueType.getId())
                     .setReporterId(user.getName())
+                    .setPriorityId(prioridad)
                     .addCustomFieldValue("customfield_15104", "https://jira.segurosbolivar.com/browse/"+mainIssueKey)
-                    .addCustomFieldValue("customfield_18009", problem.getCustomFieldValue(fieldManager.getCustomField("customfield_18009")).toString())
+                    .addCustomFieldValue("customfield_18009", opcionParaPoner.getOptionId().toString())
+                    .addCustomFieldValue("customfield_10414", opcionParaAplicacion.getOptionId().toString())
+                    .addCustomFieldValue("customfield_14300", momentoError)
+                    .addCustomFieldValue("customfield_10432", severidad)
+                    .addCustomFieldValue("customfield_15700", fabricaDesarrollo)
+                    .addCustomFieldValue("customfield_14501", motivoEscalamiento)
+                    .addCustomFieldValue("customfield_10102",epica)
                     .setDescription(problem.getDescription())
                     .setProjectId(project.getId());
 
@@ -128,14 +178,36 @@ public class GJIRAUtils {
                 params.put("mensaje", result.getErrorCollection());
                 return false;
             } else {
-                Issue nuevoIncidente = issueService.create(user, result).getIssue();
-                GJIRAUtils.relacionarIssuesConRelacionado(mainIssue.getKey(), nuevoIncidente.getKey(), issueLinkService, params, authenticationContext);
+                IssueService.IssueResult nuevoIncidente = issueService.create(user, result);
+                params.put("validation",result.isValid());
+                params.put("nuevoIncidente",nuevoIncidente.getErrorCollection());
+                GJIRAUtils.relacionarIssuesConRelacionado(mainIssue.getKey(), nuevoIncidente.getIssue().getKey(), issueLinkService, params, authenticationContext);
                 return true;
             }
         }
         catch(Exception ex){
             params.put("mensaje", ex.toString());
+            ex.printStackTrace();
             return false;
         }
+    }
+
+    public static Options getCustomFieldOptionsForIncidenteProductivo(String customFieldName,JiraAuthenticationContext authenticationContext, SearchService searchService, OptionsManager optionsManager, CustomFieldManager customFieldManager){
+        Issue incidenteCualquiera;
+        CustomField customField = customFieldManager.getCustomFieldObject(customFieldName);
+        try {
+            incidenteCualquiera = getIssuesOnlyByType("Incidente Productivo", authenticationContext, searchService).stream().findFirst().get();
+        }
+        catch(SearchException ex){
+            return null;
+        }
+        Options opcionesDisponibles = optionsManager.getOptions(customField.getRelevantConfig(incidenteCualquiera));
+        return opcionesDisponibles;
+    }
+
+    public static String removeLastChar(String s) {
+        return (s == null || s.length() == 0)
+                ? null
+                : (s.substring(0, s.length() - 1));
     }
 }
