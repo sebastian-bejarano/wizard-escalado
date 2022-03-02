@@ -82,7 +82,7 @@ public class GJIRAUtils {
         //Se crea una nueva cláusula de JQL
         JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
         //De acuerdo a la cláusula de JQL se hace un nuevo Query que se crea a partir de los métodos del ClauseBuilder, teniendo encuenta issueType, proyecto y Categoría / Item configuración
-        Query query = jqlClauseBuilder.project(proyecto).and().issueType(issueType).and().field("cf[10409]").in().functionCascaingOption(categoriaItem[0],categoriaItem[1]).buildQuery();
+        Query query = jqlClauseBuilder.project(proyecto).and().issueType(issueType).and().field("cf[10409]").in().functionCascaingOption(categoriaItem[0],categoriaItem[1]).and().status().notIn().strings("Resolved","Canceled","Closed").buildQuery();
         //Hacemos una lista no paginada
         PagerFilter pagerFilter = PagerFilter.getUnlimitedFilter();
         //Finalmente se obtienen los resultados o se devuelve null
@@ -203,6 +203,21 @@ public class GJIRAUtils {
         }
         Options opcionesDisponibles = optionsManager.getOptions(customField.getRelevantConfig(incidenteCualquiera));
         return opcionesDisponibles;
+    }
+
+    public static boolean updateIssueStatus(Issue issue, JiraAuthenticationContext authenticationContext, IssueService issueService){
+        //Traemos el usuario que se encuentra loggeado actualmente
+        ApplicationUser user = authenticationContext.getLoggedInUser();
+        IssueInputParameters inputParameters = issueService.newIssueInputParameters()
+                .setStatusId("10000");
+        IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issue.getId(), inputParameters);
+        if(result.getErrorCollection().hasAnyErrors()){
+            return false;
+        }
+        else{
+            issueService.update(user,result);
+            return true;
+        }
     }
 
     public static String removeLastChar(String s) {
