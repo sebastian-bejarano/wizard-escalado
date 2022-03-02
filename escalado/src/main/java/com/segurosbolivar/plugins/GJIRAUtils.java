@@ -110,7 +110,6 @@ public class GJIRAUtils {
         Issue mainIssue = issueService.getIssue(user,mainIssueKey).getIssue();
         //Obtenemos el problem al que se va a relacionar
         Issue problem = issueService.getIssue(user,problemKey).getIssue();
-
         IssueType incidenteIssueType = constantsManager.getAllIssueTypeObjects().stream().filter(
                 issueType -> issueType.getName().equalsIgnoreCase("Incidente Productivo")).findFirst().orElse(null);
         try {
