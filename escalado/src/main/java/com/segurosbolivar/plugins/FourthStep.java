@@ -1,5 +1,6 @@
 package com.segurosbolivar.plugins;
 
+import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.link.IssueLinkService;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
@@ -44,28 +45,45 @@ public class FourthStep extends HttpServlet {
     @ComponentImport
     private final SearchService searchService;
 
+    @ComponentImport
+    private final IssueService issueService;
+
     //Constructor con inyección de dependencias
     @Inject
-    public FourthStep(TemplateRenderer templateRenderer, JiraAuthenticationContext authenticationContext, IssueLinkService issueLinkService, SearchService searchService){
+    public FourthStep(TemplateRenderer templateRenderer, JiraAuthenticationContext authenticationContext, IssueLinkService issueLinkService, SearchService searchService, IssueService issueService){
         this.templateRenderer = templateRenderer;
         this.authenticationContext = authenticationContext;
         this.issueLinkService = issueLinkService;
         this.searchService = searchService;
+        this.issueService = issueService;
     }
 
     //Handler del método POST en el servlet
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
         //Creamos un mapa de Hash para inyectar parámetros que serán enviados a velocity
         Map<String,Object> params = new HashMap<String,Object>();
         //Obtenemos los parámetros que vienen en el request
         String proyectoAEscalar = req.getParameter("proyecto");
         String issueAEscalar = req.getParameter("issueKey");
         String problemAEnlazar = req.getParameter("problem");
+        boolean crearProblema = Boolean.valueOf(req.getParameter("crearProblemaNuevo"));
         //Obtenemos el issue que vamos a escalar (Que debería ser en este momento tipo incident)
         Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueAEscalar);
         //Obtenemos el issue tipo problem con el cuál se va a enlazar
-        Issue problem = ComponentAccessor.getIssueManager().getIssueByCurrentKey(problemAEnlazar);
+        Issue problem;
+        if(crearProblema){
+            Issue nuevoProblema = GJIRAUtils.crearProblemaAsociado(authenticationContext,issueService,issue,ComponentAccessor.getFieldManager(),ComponentAccessor.getCustomFieldManager(),ComponentAccessor.getOptionsManager());
+            if(nuevoProblema != null){
+                problem = nuevoProblema;
+            }
+            else{
+                throw new ServletException("No se pudo crear el problem");
+            }
+        }
+        else{
+             problem = ComponentAccessor.getIssueManager().getIssueByCurrentKey(problemAEnlazar);
+        }
         //Código del issueLink "Relacionado"
         //Obtenemos el objeto IssueLink
         IssueLink link = ComponentAccessor.getIssueLinkManager().getIssueLink(274416l);

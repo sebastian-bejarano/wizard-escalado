@@ -52,7 +52,4 @@
   <servlet name="fifthStep" class="com.segurosbolivar.plugins.FifthStep" key="fifthStep">
     <url-pattern>/pluginUI/fifthStep</url-pattern>
   </servlet>
-  <servlet name="createProblem" class="com.segurosbolivar.plugins.CreateProblem" key="createProblem">
-    <url-pattern>/pluginUI/createProblem</url-pattern>
-  </servlet>
 </atlassian-plugin>

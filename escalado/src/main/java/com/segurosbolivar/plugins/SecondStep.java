@@ -78,9 +78,11 @@ public class SecondStep extends HttpServlet {
         //Miramos los posibles valores del parámetro origen que viene del formulario
         switch (actionType) {
             case "Babysitting":
+                GJIRAUtils.preExistente = false;
                 templateRenderer.render("templates/secondStepBaby.vm", params,res.getWriter());
                 break;
             case "Preexistente":
+                GJIRAUtils.preExistente = true;
                 templateRenderer.render("templates/secondStepPre.vm", params,res.getWriter());
                 break;
             default:

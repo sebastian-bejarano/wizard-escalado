@@ -25,11 +25,16 @@
                     </select>
                 </label>
             </div>
+            <div class="groupInput">
+                <label>
+                    Deseo asociarle un problema nuevo
+                    <input type="checkbox" name="crearProblemaNuevo"/>
+                </label>
+            </div>
             <!-- Dialog footer -->
             <footer class="aui-dialog2-footer">
                 <!-- Actions to render on the right of the footer -->
                 <div class="aui-dialog2-footer-actions">
-                    <input type="submit" id="submitBtn" class="aui-button" value="Crear Problem" formaction="/plugins/servlet/pluginUI/createProblem"/>
                     <input type="submit" id="submitBtn" class="aui-button aui-button-primary" value="Siguiente"/>
                     <button type ="button" class="aui-button aui-button-link" id="closeBtn">Close</button>
                 </div>

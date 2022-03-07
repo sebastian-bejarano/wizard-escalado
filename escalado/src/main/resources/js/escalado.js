@@ -33,12 +33,6 @@ const window_callback = () => {
     console.log("Acá se configura el timer");
     //Colocamos un timer de 50ms para esperar a que aparezca la ventana
     setTimeout(function(){
-        $("#mi-item-link-dialog").css(
-            {
-                "width":"50%",
-                "transform":"translate(-9%, -50%)"
-            }
-        );
         //agregamos el callback al botón cerrar
         document.querySelector("#closeBtn").onclick = closeBtn_callback;
         //Hacemos que el botón submit llame al callback de la ventana
@@ -49,20 +43,6 @@ const window_callback = () => {
 //Esta es la función que se va a llamar la primera vez que se abra la ventana al darle click
 const first_window_callback = () =>{
     //Con ayuda de jQuery ajustamos el css de la ventana
-    $("#mi-item-link-dialog").css(
-        {
-            "width":"18%",
-            "transform":"translate(20%, -50%)"
-        }
-    );
-    //Ahora ajustamos el CSS de los labels para que queden centrados
-    $(".groupInput").css(
-        {
-            "width":"40%",
-            "margin-left":"auto",
-            "margin-right":"auto"
-        }
-    );
     //Adjuntamos un método al botón cerrar para que remueva el diálogo y sus child nodes además del fondo negro
     document.querySelector("#closeBtn").onclick = closeBtn_callback;
     //Hacemos que el botón submit llame al callback de la ventana
