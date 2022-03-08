@@ -6,7 +6,10 @@ import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueInputParameters;
+import com.atlassian.jira.issue.customfields.option.Option;
 import com.atlassian.jira.issue.customfields.option.Options;
+import com.atlassian.jira.issue.fields.CustomField;
 import com.atlassian.jira.issue.link.Direction;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkCreator;
@@ -67,18 +70,19 @@ public class FourthStep extends HttpServlet {
         String proyectoAEscalar = req.getParameter("proyecto");
         String issueAEscalar = req.getParameter("issueKey");
         String problemAEnlazar = req.getParameter("problem");
-        boolean crearProblema = Boolean.valueOf(req.getParameter("crearProblemaNuevo"));
+        String crearProblema = (req.getParameter("crearProblemaNuevo") != null && !req.getParameter("crearProblemaNuevo").isEmpty() ? req.getParameter("crearProblemaNuevo") : "No");
         //Obtenemos el issue que vamos a escalar (Que debería ser en este momento tipo incident)
         Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueAEscalar);
         //Obtenemos el issue tipo problem con el cuál se va a enlazar
         Issue problem;
-        if(crearProblema){
-            Issue nuevoProblema = GJIRAUtils.crearProblemaAsociado(authenticationContext,issueService,issue,ComponentAccessor.getFieldManager(),ComponentAccessor.getCustomFieldManager(),ComponentAccessor.getOptionsManager());
-            if(nuevoProblema != null){
-                problem = nuevoProblema;
+        if(crearProblema.equals("Si")){
+            IssueService.CreateValidationResult resultadoCreacion = GJIRAUtils.crearProblemaAsociado(authenticationContext,issueService,issue,ComponentAccessor.getFieldManager(),ComponentAccessor.getCustomFieldManager(),ComponentAccessor.getOptionsManager(),ComponentAccessor.getProjectManager());
+            if(!resultadoCreacion.getErrorCollection().hasAnyErrors()){
+                IssueService.IssueResult nuevoProblema = issueService.create(authenticationContext.getLoggedInUser(),resultadoCreacion);
+                problem = nuevoProblema.getIssue();
             }
             else{
-                throw new ServletException("No se pudo crear el problem");
+                throw new ServletException(resultadoCreacion.getErrorCollection().toString());
             }
         }
         else{

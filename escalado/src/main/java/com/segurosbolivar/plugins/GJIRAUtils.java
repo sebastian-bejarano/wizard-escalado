@@ -21,12 +21,14 @@ import com.atlassian.jira.issue.search.SearchResults;
 import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.project.Project;
+import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 import com.atlassian.jira.issue.fields.FieldManager;
 
+import javax.servlet.ServletException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -122,7 +124,7 @@ public class GJIRAUtils {
         }
     }
 
-    public static boolean crearIncidenteProductivoEnlazado(String projectKey, String mainIssueKey, String problemKey, String prioridad, String momentoError, String severidad, String fabricaDesarrollo, String motivoEscalamiento, String epica, JiraAuthenticationContext authenticationContext, Map params, ProjectService projectService, ConstantsManager constantsManager, IssueService issueService, IssueLinkService issueLinkService, FieldManager fieldManager, CustomFieldManager customFieldManager, OptionsManager optionsManager, SearchService searchService){
+    public static boolean crearIncidenteProductivoEnlazado(String projectKey, String mainIssueKey, String problemKey, String prioridad, String momentoError, String severidad, String fabricaDesarrollo, String motivoEscalamiento, String epica, JiraAuthenticationContext authenticationContext, Map params, ProjectService projectService, ConstantsManager constantsManager, IssueService issueService, IssueLinkService issueLinkService, FieldManager fieldManager, CustomFieldManager customFieldManager, OptionsManager optionsManager, SearchService searchService) throws ServletException{
         //Traemos el usuario que se encuentra loggeado actualmente
         ApplicationUser user = authenticationContext.getLoggedInUser();
         //Obtenemos el proyecto al que se va a escalar
@@ -136,7 +138,7 @@ public class GJIRAUtils {
         //Valor del custom field Centro de desarrollo
         CustomField centroDesarrollo = customFieldManager.getCustomFieldObject("customfield_18009");
         Options opcionesDisponiblesCentroDesarrollo = optionsManager.getOptions(centroDesarrollo.getRelevantConfig(problem));
-        Option opcionParaPoner = opcionesDisponiblesCentroDesarrollo.stream().filter(opcion -> opcion.getValue().equalsIgnoreCase(problem.getCustomFieldValue(fieldManager.getCustomField("customfield_18009")).toString())).findFirst().get();
+        Option opcionParaPoner = opcionesDisponiblesCentroDesarrollo.stream().filter(opcion->opcion.getValue().equalsIgnoreCase(mainIssue.getCustomFieldValue(fieldManager.getCustomField("customfield_18009")).toString())).findFirst().get();
         //Valor del custom field Aplicación
         Object categoriaItem = problem.getCustomFieldValue(ComponentAccessor.getFieldManager().getCustomField("customfield_10409"));
         String categoriaItemString = categoriaItem.toString();
@@ -222,35 +224,42 @@ public class GJIRAUtils {
         }
     }
 
-    public static Issue crearProblemaAsociado(JiraAuthenticationContext authenticationContext, IssueService issueService, Issue problem, FieldManager fieldManager, CustomFieldManager customFieldManager, OptionsManager optionsManager){
+    public static IssueService.CreateValidationResult crearProblemaAsociado(JiraAuthenticationContext authenticationContext, IssueService issueService, Issue incident, FieldManager fieldManager, CustomFieldManager customFieldManager, OptionsManager optionsManager, ProjectManager projectManager){
         ApplicationUser user = authenticationContext.getLoggedInUser();
         IssueInputParameters inputParameters = issueService.newIssueInputParameters()
-                .setSummary(problem.getSummary())
-                .setDescription(problem.getDescription())
-                .addCustomFieldValue("customfield_10337", String.valueOf(getOptionIdFromCustomField("customfield_10337",problem,authenticationContext,issueService,customFieldManager,optionsManager,fieldManager)))
-                .addCustomFieldValue("customfield_10343", String.valueOf(getOptionIdFromCustomField("customfield_10343",problem,authenticationContext,issueService,customFieldManager,optionsManager,fieldManager)))
-                .addCustomFieldValue("customfield_18009", String.valueOf(getOptionIdFromCustomField("customfield_18009",problem,authenticationContext,issueService,customFieldManager,optionsManager,fieldManager)))
-                .setPriorityId(problem.getPriority().getId())
-                .addCustomFieldValue("customfield_10409",String.valueOf(getOptionIdFromCustomField("customfield_10409",problem,authenticationContext,issueService,customFieldManager,optionsManager,fieldManager)))
-                .addCustomFieldValue("customfield_10409:1",String.valueOf(getOptionIdFromCustomField("customfield_10409:1",problem,authenticationContext,issueService,customFieldManager,optionsManager,fieldManager)))
+                .setIssueTypeId("10213")
+                .setProjectId(projectManager.getProjectByCurrentKey("PPP").getId())
+                .setSummary(incident.getSummary())
+                .setDescription(incident.getDescription())
                 .setReporterId(user.getName())
-                .setAssigneeId(user.getName());
-
+                .setAssigneeId(user.getName())
+                .setPriorityId(incident.getPriority().getId())
+                .addCustomFieldValue("customfield_18009", getOptionIdFromCustomField("customfield_18009",incident,authenticationContext,issueService,customFieldManager,optionsManager,fieldManager))
+                .addCustomFieldValue("customfield_10337", getOptionIdFromCustomField("customfield_10337",incident,authenticationContext,issueService,customFieldManager,optionsManager,fieldManager))
+                .addCustomFieldValue("customfield_10343", getOptionIdFromCustomField("customfield_10343",incident,authenticationContext,issueService,customFieldManager,optionsManager,fieldManager))
+                .addCustomFieldValue("customfield_10439", getOptionIdFromCustomField("customfield_10439",incident,authenticationContext,issueService,customFieldManager,optionsManager,fieldManager))
+                .addCustomFieldValue("customfield_10409", getOptionIdFromCustomField("customfield_10409",incident,authenticationContext,issueService,customFieldManager,optionsManager,fieldManager).split("-")[0])
+                .addCustomFieldValue("customfield_10409:1", getOptionIdFromCustomField("customfield_10409",incident,authenticationContext,issueService,customFieldManager,optionsManager,fieldManager).split("-")[1]);
         IssueService.CreateValidationResult result =  issueService.validateCreate(user,inputParameters);
-        if(result.getErrorCollection().hasAnyErrors()){
-            return null;
-        }
-        else{
-            return result.getIssue();
-        }
+        return result;
     }
 
-    public static long getOptionIdFromCustomField(String customfield,Issue issue,JiraAuthenticationContext authenticationContext, IssueService issueService, CustomFieldManager customFieldManager, OptionsManager optionsManager, FieldManager fieldManager){
-        //Valor del custom field Centro de desarrollo
+    public static String getOptionIdFromCustomField(String customfield,Issue issue,JiraAuthenticationContext authenticationContext, IssueService issueService, CustomFieldManager customFieldManager, OptionsManager optionsManager, FieldManager fieldManager){
         CustomField centroDesarrollo = customFieldManager.getCustomFieldObject(customfield);
         Options opcionesDisponiblesCentroDesarrollo = optionsManager.getOptions(centroDesarrollo.getRelevantConfig(issue));
-        Option opcionParaPoner = opcionesDisponiblesCentroDesarrollo.stream().filter(opcion -> opcion.getValue().equalsIgnoreCase(issue.getCustomFieldValue(fieldManager.getCustomField(customfield)).toString())).findFirst().get();
-        return opcionParaPoner.getOptionId();
+        if(customfield.equalsIgnoreCase("customfield_10409")) {
+            Object categoriaItem = issue.getCustomFieldValue(ComponentAccessor.getFieldManager().getCustomField("customfield_10409"));
+            String categoriaItemString = categoriaItem.toString();
+            categoriaItemString = categoriaItemString.split(",")[0].split("=")[1] +"-"+ removeLastChar(categoriaItemString.split(",")[1].split("=")[1]);
+            String categoria = categoriaItemString.split("-")[0];
+            String item = categoriaItemString.split("-")[1];
+            Option Categoria = opcionesDisponiblesCentroDesarrollo.stream().filter(opcion -> opcion.getValue().equalsIgnoreCase(categoria)).findFirst().get();
+            Option Item = Categoria.getChildOptions().stream().filter(opcion->opcion.getValue().equalsIgnoreCase(item)).findFirst().get();
+            return String.valueOf(Categoria.getOptionId())+"-"+String.valueOf(Item.getOptionId());
+        }else{
+            Option opcionParaPoner = opcionesDisponiblesCentroDesarrollo.stream().filter(opcion->opcion.getValue().equalsIgnoreCase(issue.getCustomFieldValue(fieldManager.getCustomField(customfield)).toString())).findFirst().get();
+            return String.valueOf(opcionParaPoner.getOptionId());
+        }
     }
 
     public static String removeLastChar(String s) {

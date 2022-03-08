@@ -28,7 +28,7 @@
             <div class="groupInput">
                 <label>
                     Deseo asociarle un problema nuevo
-                    <input type="checkbox" name="crearProblemaNuevo"/>
+                    <input type="checkbox" name="crearProblemaNuevo" value="Si"/>
                 </label>
             </div>
             <!-- Dialog footer -->
