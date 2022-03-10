@@ -111,6 +111,7 @@ public class FourthStep extends HttpServlet {
         params.put("severidadOpciones",severidadOpciones);
         params.put("fabricaDesarrolloOpciones",fabricaDesarrolloOpciones);
         params.put("motivoEscalamientoOpciones",motivoEscalamientoOpciones);
+        params.put("personaAEscalarOpciones",GJIRAUtils.traerIntegrantesDeGrupo("Lideres Estabilizacion",ComponentAccessor.getGroupManager()));
         templateRenderer.render("templates/fourthStep.vm", params,resp.getWriter());
     }
 }

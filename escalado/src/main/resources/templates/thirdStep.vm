@@ -5,31 +5,32 @@
     </head>
     <body>
         <h2>Seleccione de la lista el Problem o cree uno nuevo</h2>
-        <form action="/plugins/servlet/pluginUI/fourthStep" method="POST">
-            <div class="groupInput">
+        <form action="/plugins/servlet/pluginUI/fourthStep" method="POST" class="aui">
+            <div class="field-group">
                 <label>
-                    Proyecto donde se escalará <input type="text" readonly name="proyecto" value="$proyectoAEscalar.getKey() / $proyectoAEscalar.getName()"/>
+                    Proyecto donde se escalará
                 </label>
+                <input type="text" readonly name="proyecto" value="$proyectoAEscalar.getKey() / $proyectoAEscalar.getName()"field-group/>
             </div>
-            <div class="groupInput">
+            <div class="field-group">
                 <label>
-                    Incident que se escalará <input type="text" readonly name="issueKey" value="$issueKey"/>
+                    Incident que se escalará
                 </label>
+                <input type="text" readonly name="issueKey" value="$issueKey"field-group/>
             </div>
-            <div class="groupInput">
-                <label>Seleccione el problem
-                    <select name="problem">
-                        #foreach ($problem in $problems)
-                            <option value="$problem.getKey()">$problem.getKey() - $problem.getSummary()</option>
-                        #end
-                    </select>
-                </label>
+            <div class="field-group">
+                <label>Seleccione el problem</label>
+                <select name="problem" class="select">
+                    #foreach ($problem in $problems)
+                        <option value="$problem.getKey()">$problem.getKey() - $problem.getSummary()</option>
+                    #end
+                </select>
             </div>
-            <div class="groupInput">
+            <div class="field-group">
                 <label>
                     Deseo asociarle un problema nuevo
-                    <input type="checkbox" name="crearProblemaNuevo" value="Si"/>
                 </label>
+                <input type="checkbox" name="crearProblemaNuevo" value="Si"field-group/>
             </div>
             <!-- Dialog footer -->
             <footer class="aui-dialog2-footer">

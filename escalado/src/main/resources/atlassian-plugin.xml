@@ -52,4 +52,14 @@
   <servlet name="fifthStep" class="com.segurosbolivar.plugins.FifthStep" key="fifthStep">
     <url-pattern>/pluginUI/fifthStep</url-pattern>
   </servlet>
+  <web-section key="my_new_section" name="my_new_section" location="admin_plugins_menu">
+    <label key="Esqueleto - Seguros Bolivar"/>
+  </web-section>
+  <web-item key="my_new_tabbed_item" name="my_new_tabbed_item" section="admin_plugins_menu/my_new_section" weight="1">
+    <label key="Configuración"/>
+    <link idLink="my_new_tabbed_item">/plugins/servlet/admin</link>
+  </web-item>
+  <servlet key="admin-servlet" class="com.segurosbolivar.plugins.AdminServlet">
+    <url-pattern>/admin</url-pattern>
+  </servlet>
 </atlassian-plugin>

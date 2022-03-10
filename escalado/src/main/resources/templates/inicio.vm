@@ -5,24 +5,24 @@
     </head>
     <body>        
         <h2>Seleccione el origen del escalado</h2>
-        <form action="/plugins/servlet/pluginUI/secondStep" method="POST">
-            <div class="groupInput">
+        <form action="/plugins/servlet/pluginUI/secondStep" method="POST" class="aui">
+            <div class="field-group">
                 <label>
-                Issue a escalar
-                <input type="text" name="issueKey" value="$issueKey" readonly/>
+                    Issue a escalar
                 </label>
+                <input type="text" name="issueKey" value="$issueKey" readonlyfield-group/>
             </div>
-            <div class="groupInput">                
+            <div class="field-group">                
                 <label>
-                    <input type="radio" name="origen" value="Babysitting" checked/>
                     Babysitting
                 </label>
+                <input type="radio" name="origen" value="Babysitting" checked/>
             </div>
-            <div class="groupInput">                
+            <div class="field-group">                
                 <label>
-                    <input type="radio" name="origen" value="Preexistente"/>
                     Preexistente
                 </label>
+                <input type="radio" name="origen" value="Preexistente"/>
             </div>    
             <!-- Dialog footer -->
             <footer class="aui-dialog2-footer">

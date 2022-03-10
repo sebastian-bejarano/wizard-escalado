@@ -5,15 +5,15 @@
     </head>
     <body>        
         <h2>¿A cuál proyecto de estabilización desea escalar?</h2>
-        <form action="/plugins/servlet/pluginUI/thirdStep" method="POST">
-            <div class="groupInput">
+        <form action="/plugins/servlet/pluginUI/thirdStep" method="POST" class="aui">
+            <div class="field-group">
                 <label>
                     Issue a escalar
-                    <input type="text" name="issueKey" value="$issueKey" readonly/>
                 </label>
+                <input type="text" name="issueKey" value="$issueKey" readonlyfield-group/>
             </div>
             <label>Seleccione el proyecto</label>
-            <select name="proyecto">
+            <select name="proyecto" class="select">
                 #foreach ($project in $projects)
                     #if(($project.getName().toLowerCase().contains("estabilización") || $project.getName().toLowerCase().contains("estabilizacion")))
                         <option value="$project.getKey()">$project.getName()</option>

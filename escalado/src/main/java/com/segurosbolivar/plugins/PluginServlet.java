@@ -1,5 +1,7 @@
 package com.segurosbolivar.plugins;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserManager;
@@ -55,6 +57,7 @@ public class PluginServlet extends HttpServlet {
         String issueKey = req.getParameter("issueKey");
         params.put("issueKey", issueKey);
         String userName = user.getUsername();
+        Issue issueAEscalar = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey);
 
         if(userName == null){
             redirectToLogin(req,res);

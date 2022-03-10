@@ -23,6 +23,7 @@ import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.security.JiraAuthenticationContext;
+import com.atlassian.jira.security.groups.GroupManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
@@ -30,6 +31,7 @@ import com.atlassian.jira.issue.fields.FieldManager;
 
 import javax.servlet.ServletException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -124,7 +126,7 @@ public class GJIRAUtils {
         }
     }
 
-    public static boolean crearIncidenteProductivoEnlazado(String projectKey, String mainIssueKey, String problemKey, String prioridad, String momentoError, String severidad, String fabricaDesarrollo, String motivoEscalamiento, String epica, JiraAuthenticationContext authenticationContext, Map params, ProjectService projectService, ConstantsManager constantsManager, IssueService issueService, IssueLinkService issueLinkService, FieldManager fieldManager, CustomFieldManager customFieldManager, OptionsManager optionsManager, SearchService searchService) throws ServletException{
+    public static boolean crearIncidenteProductivoEnlazado(String projectKey, String mainIssueKey, String problemKey, String prioridad, String momentoError, String severidad, String fabricaDesarrollo, String motivoEscalamiento, String epica, String nuevoResponsable,JiraAuthenticationContext authenticationContext, Map params, ProjectService projectService, ConstantsManager constantsManager, IssueService issueService, IssueLinkService issueLinkService, FieldManager fieldManager, CustomFieldManager customFieldManager, OptionsManager optionsManager, SearchService searchService) throws ServletException{
         //Traemos el usuario que se encuentra loggeado actualmente
         ApplicationUser user = authenticationContext.getLoggedInUser();
         //Obtenemos el proyecto al que se va a escalar
@@ -163,6 +165,7 @@ public class GJIRAUtils {
             issueInputParameters.setSummary(problem.getSummary())
                     .setIssueTypeId(incidenteIssueType.getId())
                     .setReporterId(user.getName())
+                    .setAssigneeId(nuevoResponsable)
                     .setPriorityId(prioridad)
                     .addCustomFieldValue("customfield_15104", "https://jira.segurosbolivar.com/browse/"+mainIssueKey)
                     .addCustomFieldValue("customfield_18009", opcionParaPoner.getOptionId().toString())
@@ -185,7 +188,14 @@ public class GJIRAUtils {
                 params.put("validation",result.isValid());
                 params.put("nuevoIncidente",nuevoIncidente.getErrorCollection());
                 GJIRAUtils.relacionarIssuesConRelacionado(mainIssue.getKey(), nuevoIncidente.getIssue().getKey(), issueLinkService, params, authenticationContext);
-                return true;
+                IssueService.TransitionValidationResult statusUpdateResult = issueService.validateTransition(user,nuevoIncidente.getIssue().getId(),391,issueInputParameters);
+                if(statusUpdateResult.getErrorCollection().hasAnyErrors()){
+                    return false;
+                }
+                else{
+                    issueService.transition(user,statusUpdateResult);
+                    return true;
+                }
             }
         }
         catch(Exception ex){
@@ -208,11 +218,12 @@ public class GJIRAUtils {
         return opcionesDisponibles;
     }
 
-    public static boolean updateIssueStatus(Issue issue, JiraAuthenticationContext authenticationContext, IssueService issueService){
+    public static boolean updateIssueStatus(Issue issue, String nuevoResponsable, JiraAuthenticationContext authenticationContext, IssueService issueService){
         //Traemos el usuario que se encuentra loggeado actualmente
         ApplicationUser user = authenticationContext.getLoggedInUser();
         IssueInputParameters inputParameters = issueService.newIssueInputParameters()
-                .setStatusId("10000")
+                .setAssigneeId(nuevoResponsable)
+                .setStatusId("10258")
                 .addCustomFieldValue("customfield_10439",GJIRAUtils.preExistente ? "11274" : "23801");
         IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issue.getId(), inputParameters);
         if(result.getErrorCollection().hasAnyErrors()){
@@ -220,7 +231,13 @@ public class GJIRAUtils {
         }
         else{
             issueService.update(user,result);
-            return true;
+            IssueService.TransitionValidationResult statusResult = issueService.validateTransition(user,issue.getId(),161,inputParameters);
+            if(statusResult.getErrorCollection().hasAnyErrors()){
+                return false;
+            }else {
+                issueService.transition(user, statusResult);
+                return true;
+            }
         }
     }
 
@@ -261,7 +278,9 @@ public class GJIRAUtils {
             return String.valueOf(opcionParaPoner.getOptionId());
         }
     }
-
+    public static Collection<ApplicationUser> traerIntegrantesDeGrupo(String nombreGrupo,GroupManager groupManager){
+        return groupManager.getDirectUsersInGroup(groupManager.getGroup(nombreGrupo));
+    }
     public static String removeLastChar(String s) {
         return (s == null || s.length() == 0)
                 ? null

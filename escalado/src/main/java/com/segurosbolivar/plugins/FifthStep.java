@@ -75,16 +75,18 @@ public class FifthStep extends HttpServlet {
         String severidad = req.getParameter("severidad");
         String fabricaDesarrollo = req.getParameter("fabricaDesarrollo");
         String motivoEscalamiento = req.getParameter("motivoEscalamiento");
+        String nuevoResponsable = req.getParameter("personaAEscalar");
         String epica = req.getParameter("epica");
         String issueKey = issueAEscalar.split("/")[0].trim();
         String problemKey = problemAEnlazar.split("/")[0].trim();
         String projectKey = proyectoAEscalar.split("/")[0].trim();
         if(GJIRAUtils.relacionarIssuesConRelacionado(issueKey,problemKey,this.issueLinkService,params,this.authenticationContext)){
-            if(GJIRAUtils.crearIncidenteProductivoEnlazado(projectKey,issueKey,problemKey,prioridad,momentoError,severidad,fabricaDesarrollo, motivoEscalamiento, epica,this.authenticationContext,params,projectService,constantsManager,issueService,issueLinkService,ComponentAccessor.getFieldManager(),ComponentAccessor.getCustomFieldManager(),ComponentAccessor.getOptionsManager(),searchService)){
-                if(GJIRAUtils.updateIssueStatus(ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey),authenticationContext,issueService)){
+            if(GJIRAUtils.crearIncidenteProductivoEnlazado(projectKey,issueKey,problemKey,prioridad,momentoError,severidad,fabricaDesarrollo, motivoEscalamiento, epica, nuevoResponsable,this.authenticationContext,params,projectService,constantsManager,issueService,issueLinkService,ComponentAccessor.getFieldManager(),ComponentAccessor.getCustomFieldManager(),ComponentAccessor.getOptionsManager(),searchService)){
+                if(GJIRAUtils.updateIssueStatus(ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey), nuevoResponsable,authenticationContext,issueService)){
                     params.put("mensaje","Issue escalado con éxito");
+                }else {
+                    params.put("mensaje", "Falló la actualización de estado");
                 }
-                params.put("mensaje","Falló la actualización de estado");
             }
         }
         templateRenderer.render("templates/fifthStep.vm", params,resp.getWriter());
