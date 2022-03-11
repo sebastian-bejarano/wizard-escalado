@@ -63,12 +63,16 @@ public class ThirdStep extends HttpServlet {
         categoriaItemString = categoriaItemString.split(",")[0].split("=")[1] +"-"+ removeLastChar(categoriaItemString.split(",")[1].split("=")[1]);
         String[] categoria_item = categoriaItemString.split("-");
         //Fin de obtención del campo categoría Item
+        //obtención del issueType a escalar
+        String issueType = req.getParameter("issueType");
+
         try {
             //Se obtiene la lista de issues con esas carcaterísticas
             List<Issue> problemsConEseCategoriaItem = GJIRAUtils.getIssuesByTypeAndCategoriaItem("PPP","Problem",categoria_item,authenticationContext,searchService);
             params.put("problems",problemsConEseCategoriaItem);
             params.put("issueKey",mainIssueKey);
             params.put("proyectoAEscalar",proyecto);
+            params.put("issueType",issueType);
         }
         catch(SearchException e){
             e.printStackTrace();

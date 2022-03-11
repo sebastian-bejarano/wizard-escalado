@@ -10,7 +10,13 @@
                 <label>
                     Issue a escalar
                 </label>
-                <input type="text" name="issueKey" value="$issueKey" readonlyfield-group/>
+                <input type="text" name="issueKey" value="$issueKey" readonly/>
+            </div>
+            <div class="field-group">
+                <label>
+                    Tipo de Issue
+                </label>
+                <input type="text" name="issueType" value="$issueType" readonly/>
             </div>
             <label>Seleccione el proyecto</label>
             <select name="proyecto" class="select">

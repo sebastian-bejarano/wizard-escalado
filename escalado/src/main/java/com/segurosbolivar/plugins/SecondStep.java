@@ -2,6 +2,7 @@ package com.segurosbolivar.plugins;
 
 import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.auth.LoginUriProvider;
@@ -69,6 +70,8 @@ public class SecondStep extends HttpServlet {
         Map<String, Object> params = new HashMap<String, Object>();
         //Obtenemos todos los proyectos
         List<Project> proyectos = projectService.getAllProjects(ComponentAccessor.getUserManager().getUserByName(userName)).getReturnedValue();
+        Issue aEscalar = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey);
+        params.put("issueType",aEscalar.getIssueType().getName());
         params.put("projects", proyectos);
         params.put("issueKey", issueKey);
         //Colocamos el tipo de respuesta que va

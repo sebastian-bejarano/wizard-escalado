@@ -8,11 +8,15 @@
         <form action="/plugins/servlet/pluginUI/fifthStep" method="post" class="aui">
             <div class="field-group">
                 <label>Issue a escalar</label>
-                <input type="text" readonly name="issue" value="$issue.getKey() / $issue.getSummary()"field-group/>
+                <input type="text" readonly name="issue" value="$issue.getKey() / $issue.getSummary()"/>
             </div>
             <div class="field-group">
                 <label>Problem relacionado</label>
-                <input type="text" readonly name="problem" value="$problem.getKey() / $problem.getSummary()"field-group/>
+                #if(!$isServiceRequest.equalsIgnoreCase("true"))
+                    <input type="text" readonly name="problem" value="$problem.getKey() / $problem.getSummary()"/>
+                #else
+                    <input type="text" readonly name="problem" value="Service Request - No lleva problem asociado"/>
+                #end
             </div>
             <div class="field-group">
                 <label>Proyecto al que se escalará</label>

@@ -10,28 +10,65 @@
                 <label>
                     Proyecto donde se escalará
                 </label>
-                <input type="text" readonly name="proyecto" value="$proyectoAEscalar.getKey() / $proyectoAEscalar.getName()"field-group/>
+                <input type="text" readonly name="proyecto" value="$proyectoAEscalar.getKey() / $proyectoAEscalar.getName()"/>
             </div>
             <div class="field-group">
                 <label>
                     Incident que se escalará
                 </label>
-                <input type="text" readonly name="issueKey" value="$issueKey"field-group/>
+                <input type="text" readonly name="issueKey" value="$issueKey"/>
             </div>
             <div class="field-group">
                 <label>Seleccione el problem</label>
                 <select name="problem" class="select">
-                    #foreach ($problem in $problems)
-                        <option value="$problem.getKey()">$problem.getKey() - $problem.getSummary()</option>
+                    #if($issueType.equalsIgnoreCase("Incident"))
+                        #foreach ($problem in $problems)
+                            <option value="$problem.getKey()">$problem.getKey() - $problem.getSummary()</option>
+                        #end
+                    #else
+                            <option value="Service Request">Service Request - No lleva problem asociado</option>
                     #end
                 </select>
             </div>
-            <div class="field-group">
-                <label>
-                    Deseo asociarle un problema nuevo
-                </label>
-                <input type="checkbox" name="crearProblemaNuevo" value="Si"field-group/>
-            </div>
+            #if($issueType.equalsIgnoreCase("Incident"))
+                <div class="field-group">
+                    <label>
+                        Deseo asociarle un problema nuevo
+                    </label>
+                    <input type="checkbox" name="crearProblemaNuevo" value="Si"/>
+                </div>
+                <div class="field-group">
+                    <label>
+                        Deseo cambiarle el nombre al problem elegido?
+                    </label>
+                    <input type="checkbox" name="cambiarNombreProblema" id="cambiarNombre" onclick="cambiarNombre(this)"/>
+                </div>
+                <div class="field-group">
+                    <label>
+                        Nuevo nombre para el problem
+                    </label>
+                    <input type="text" name="nombreNuevo" id="nombreNuevo"/>
+                </div>
+            #else
+                <div class="field-group">
+                    <label>
+                        Deseo asociarle un problema nuevo
+                    </label>
+                    <input type="checkbox" name="crearProblemaNuevo" value="Si" onclick="javascript: return false;"/>
+                </div>
+                <div class="field-group">
+                    <label>
+                        Deseo cambiarle el nombre al problem elegido?
+                    </label>
+                    <input type="checkbox" name="cambiarNombreProblema" value="Si" onclick="javascript: return false;"/>
+                </div>
+                <div class="field-group">
+                    <label>
+                        Nuevo nombre para el problem
+                    </label>
+                    <input type="text" name="nombreNuevo" readonly value="Service Request - No lleva problem asociado"/>
+                </div>
+            #end
             <!-- Dialog footer -->
             <footer class="aui-dialog2-footer">
                 <!-- Actions to render on the right of the footer -->

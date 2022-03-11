@@ -71,6 +71,8 @@ public class FourthStep extends HttpServlet {
         String issueAEscalar = req.getParameter("issueKey");
         String problemAEnlazar = req.getParameter("problem");
         String crearProblema = (req.getParameter("crearProblemaNuevo") != null && !req.getParameter("crearProblemaNuevo").isEmpty() ? req.getParameter("crearProblemaNuevo") : "No");
+        String cambiarNombreProblema = (req.getParameter("cambiarNombreProblema") != null && !req.getParameter("cambiarNombreProblema").isEmpty() ? req.getParameter("cambiarNombreProblema") : "No");
+        String nombreNuevoProblema = req.getParameter("nombreNuevo");
         //Obtenemos el issue que vamos a escalar (Que debería ser en este momento tipo incident)
         Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueAEscalar);
         //Obtenemos el issue tipo problem con el cuál se va a enlazar
@@ -86,14 +88,33 @@ public class FourthStep extends HttpServlet {
             }
         }
         else{
-             problem = ComponentAccessor.getIssueManager().getIssueByCurrentKey(problemAEnlazar);
+            if(!problemAEnlazar.equalsIgnoreCase("Service Request")) {
+                problem = ComponentAccessor.getIssueManager().getIssueByCurrentKey(problemAEnlazar);
+                if(cambiarNombreProblema.equalsIgnoreCase("No")) {
+                    params.put("problem", problem);
+                }else{
+                    IssueInputParameters inputParameters = issueService.newIssueInputParameters()
+                            .setSummary(nombreNuevoProblema);
+
+                    IssueService.UpdateValidationResult result = issueService.validateUpdate(authenticationContext.getLoggedInUser(),problem.getId(),inputParameters);
+                    if(result.getErrorCollection().hasAnyErrors()){
+                        throw new ServletException("No se pudo cambiar el nombre del problem");
+                    }
+                    else{
+                        issueService.update(authenticationContext.getLoggedInUser(), result);
+                    }
+                }
+            }
+            else{
+                params.put("isServiceRequest","true");
+                params.put("problem", "Service Request");
+            }
         }
         //Código del issueLink "Relacionado"
         //Obtenemos el objeto IssueLink
         IssueLink link = ComponentAccessor.getIssueLinkManager().getIssueLink(274416l);
         //Colocamos los parámetros en el mapa hash para que sean enviados al template de velocity
         params.put("issue",issue);
-        params.put("problem",problem);
         params.put("project",proyectoAEscalar);
         Options momentoErrorOpciones = GJIRAUtils.getCustomFieldOptionsForIncidenteProductivo(MOMENTO_DEL_ERROR,authenticationContext,searchService,ComponentAccessor.getOptionsManager(),ComponentAccessor.getCustomFieldManager());
         Options severidadOpciones = GJIRAUtils.getCustomFieldOptionsForIncidenteProductivo(SEVERIDAD,authenticationContext,searchService,ComponentAccessor.getOptionsManager(),ComponentAccessor.getCustomFieldManager());

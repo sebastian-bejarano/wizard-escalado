@@ -127,6 +127,7 @@ public class GJIRAUtils {
     }
 
     public static boolean crearIncidenteProductivoEnlazado(String projectKey, String mainIssueKey, String problemKey, String prioridad, String momentoError, String severidad, String fabricaDesarrollo, String motivoEscalamiento, String epica, String nuevoResponsable,JiraAuthenticationContext authenticationContext, Map params, ProjectService projectService, ConstantsManager constantsManager, IssueService issueService, IssueLinkService issueLinkService, FieldManager fieldManager, CustomFieldManager customFieldManager, OptionsManager optionsManager, SearchService searchService) throws ServletException{
+
         //Traemos el usuario que se encuentra loggeado actualmente
         ApplicationUser user = authenticationContext.getLoggedInUser();
         //Obtenemos el proyecto al que se va a escalar
@@ -134,15 +135,17 @@ public class GJIRAUtils {
         //Obtenemos el mainIssue que va a ser escalado
         Issue mainIssue = issueService.getIssue(user,mainIssueKey).getIssue();
         //Obtenemos el problem al que se va a relacionar
-        Issue problem = issueService.getIssue(user,problemKey).getIssue();
+        Issue problem = !problemKey.equalsIgnoreCase("Service Request") ? issueService.getIssue(user, problemKey).getIssue(): null;
         IssueType incidenteIssueType = constantsManager.getAllIssueTypeObjects().stream().filter(
                 issueType -> issueType.getName().equalsIgnoreCase("Incidente Productivo")).findFirst().orElse(null);
         //Valor del custom field Centro de desarrollo
         CustomField centroDesarrollo = customFieldManager.getCustomFieldObject("customfield_18009");
-        Options opcionesDisponiblesCentroDesarrollo = optionsManager.getOptions(centroDesarrollo.getRelevantConfig(problem));
-        Option opcionParaPoner = opcionesDisponiblesCentroDesarrollo.stream().filter(opcion->opcion.getValue().equalsIgnoreCase(mainIssue.getCustomFieldValue(fieldManager.getCustomField("customfield_18009")).toString())).findFirst().get();
+        Options opcionesDisponiblesCentroDesarrollo = !problemKey.equalsIgnoreCase("Service Request") ? optionsManager.getOptions(centroDesarrollo.getRelevantConfig(problem)) : optionsManager.getOptions(centroDesarrollo.getRelevantConfig(mainIssue));
+        String opcionParaBuscar = !problemKey.equalsIgnoreCase("Service Request") ? problem.getCustomFieldValue(fieldManager.getCustomField("customfield_18009")).toString() : mainIssue.getCustomFieldValue(fieldManager.getCustomField("customfield_18009")).toString();
+        //throw new ServletException(opcionParaBuscar);
+        Option opcionParaPoner = opcionesDisponiblesCentroDesarrollo.stream().filter(opcion->opcion.getValue().equalsIgnoreCase(opcionParaBuscar)).findFirst().get();
         //Valor del custom field Aplicación
-        Object categoriaItem = problem.getCustomFieldValue(ComponentAccessor.getFieldManager().getCustomField("customfield_10409"));
+        Object categoriaItem = !problemKey.equalsIgnoreCase("Service Request") ? problem.getCustomFieldValue(ComponentAccessor.getFieldManager().getCustomField("customfield_10409")) : mainIssue.getCustomFieldValue(ComponentAccessor.getFieldManager().getCustomField("customfield_10409"));
         String categoriaItemString = categoriaItem.toString();
         categoriaItemString = categoriaItemString.split(",")[0].split("=")[1] +"-"+ removeLastChar(categoriaItemString.split(",")[1].split("=")[1]);
         String[] categoria_item = categoriaItemString.split("-");
@@ -162,7 +165,7 @@ public class GJIRAUtils {
         Option opcionParaAplicacion = opcionesDisponiblesAplicacion.stream().filter(opcion -> opcion.getValue().equalsIgnoreCase(categoria_item[1])).findFirst().get();
         try {
             IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
-            issueInputParameters.setSummary(problem.getSummary())
+            issueInputParameters.setSummary(!problemKey.equalsIgnoreCase("Service Request") ? problem.getSummary() : mainIssue.getSummary())
                     .setIssueTypeId(incidenteIssueType.getId())
                     .setReporterId(user.getName())
                     .setAssigneeId(nuevoResponsable)
@@ -175,7 +178,7 @@ public class GJIRAUtils {
                     .addCustomFieldValue("customfield_15700", fabricaDesarrollo)
                     .addCustomFieldValue("customfield_14501", motivoEscalamiento)
                     .addCustomFieldValue("customfield_10102",epica)
-                    .setDescription(problem.getDescription())
+                    .setDescription(!problemKey.equalsIgnoreCase("Service Request") ? problem.getDescription() : mainIssue.getDescription())
                     .setProjectId(project.getId());
 
             IssueService.CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
@@ -218,7 +221,7 @@ public class GJIRAUtils {
         return opcionesDisponibles;
     }
 
-    public static boolean updateIssueStatus(Issue issue, String nuevoResponsable, JiraAuthenticationContext authenticationContext, IssueService issueService){
+    public static boolean updateIssueStatus(Issue issue, boolean isServiceRequest,String nuevoResponsable, JiraAuthenticationContext authenticationContext, IssueService issueService){
         //Traemos el usuario que se encuentra loggeado actualmente
         ApplicationUser user = authenticationContext.getLoggedInUser();
         IssueInputParameters inputParameters = issueService.newIssueInputParameters()
@@ -231,7 +234,7 @@ public class GJIRAUtils {
         }
         else{
             issueService.update(user,result);
-            IssueService.TransitionValidationResult statusResult = issueService.validateTransition(user,issue.getId(),161,inputParameters);
+            IssueService.TransitionValidationResult statusResult = issueService.validateTransition(user,issue.getId(),!isServiceRequest ? 161 : 961,inputParameters);
             if(statusResult.getErrorCollection().hasAnyErrors()){
                 return false;
             }else {

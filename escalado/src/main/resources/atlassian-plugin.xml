@@ -24,7 +24,7 @@
     <!--Condición controlada por la clase para verificar que el issueType coincida con el pasado por el parámetro-->
     <condition class="com.segurosbolivar.plugins.conditions.GUIButtonCondition">
       <param name="issueType1">Incident</param>
-      <param name="issueType2">Task</param>
+      <param name="issueType2">Service Request</param>
       <param name="grupo">Permisos para escalar</param>
     </condition>
     <!--Descripción del web-item-->
