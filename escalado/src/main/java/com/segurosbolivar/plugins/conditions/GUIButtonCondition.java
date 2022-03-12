@@ -22,6 +22,10 @@ public class GUIButtonCondition extends AbstractWebCondition {
     private String grupo;
     private String issueType1;
     private String issueType2;
+    private String statusEscaladoServiceRequest;
+    private String statusEscaladoIncident1;
+    private String statusEscaladoIncident2;
+    private String statusEscaladoIncident3;
 
     @Inject
     public GUIButtonCondition(GroupManager groupManager){
@@ -32,7 +36,10 @@ public class GUIButtonCondition extends AbstractWebCondition {
     @Override
     public void init(Map<String, String> params) throws PluginParseException{
         super.init(params);
-
+        this.statusEscaladoServiceRequest = params.get("statusEscaladoServiceRequest");
+        this.statusEscaladoIncident1 = params.get("statusEscaladoIncident1");
+        this.statusEscaladoIncident2 = params.get("statusEscaladoIncident2");
+        this.statusEscaladoIncident3 = params.get("statusEscaladoIncident3");
         this.issueType1 = params.get("issueType1");
         this.issueType2 = params.get("issueType2");
         this.grupo = params.get("grupo");
@@ -50,10 +57,14 @@ public class GUIButtonCondition extends AbstractWebCondition {
         }
         //Recordemos que el issueType es un campo compuesto por lo que debemos sacar el nombre de ahí
         final String issueTypeName = issue.getIssueType().getName();
+        final String issueStatus = issue.getStatusId();
         //Verificamos que el usuario se encuentre en el grupo
         final Collection<String> gruposDelUsuario = groupManager.getGroupNamesForUser(applicationUser);
-
+        boolean estadoVisibleServiceRequest = issueStatus.equalsIgnoreCase(this.statusEscaladoServiceRequest);
+        boolean estadoVisibleIncident1 = issueStatus.equalsIgnoreCase(this.statusEscaladoIncident1);
+        boolean estadoVisibleIncident2 = issueStatus.equalsIgnoreCase(this.statusEscaladoIncident2);
+        boolean estadoVisibleIncident3 = issueStatus.equalsIgnoreCase(this.statusEscaladoIncident3);
         //Finalmente volvemos el booleano del issuetype con el que queremos comparar, el cual es traído del XML
-        return (issueTypeName.equalsIgnoreCase(this.issueType2)||issueTypeName.equalsIgnoreCase(this.issueType1)) && gruposDelUsuario.contains(grupo);
+        return ((issueTypeName.equalsIgnoreCase(this.issueType2) && estadoVisibleServiceRequest)||(issueTypeName.equalsIgnoreCase(this.issueType1) && (estadoVisibleIncident1 || estadoVisibleIncident2 || estadoVisibleIncident3))) && gruposDelUsuario.contains(grupo);
     }
 }

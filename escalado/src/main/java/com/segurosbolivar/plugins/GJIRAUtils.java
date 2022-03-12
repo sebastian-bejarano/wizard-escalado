@@ -126,7 +126,7 @@ public class GJIRAUtils {
         }
     }
 
-    public static boolean crearIncidenteProductivoEnlazado(String projectKey, String mainIssueKey, String problemKey, String prioridad, String momentoError, String severidad, String fabricaDesarrollo, String motivoEscalamiento, String epica, String nuevoResponsable,JiraAuthenticationContext authenticationContext, Map params, ProjectService projectService, ConstantsManager constantsManager, IssueService issueService, IssueLinkService issueLinkService, FieldManager fieldManager, CustomFieldManager customFieldManager, OptionsManager optionsManager, SearchService searchService) throws ServletException{
+    public static boolean crearIncidenteProductivoEnlazado(String projectKey, String mainIssueKey, String problemKey, String nuevoNombre,String prioridad, String momentoError, String severidad, String fabricaDesarrollo, String motivoEscalamiento, String epica, String nuevoResponsable,JiraAuthenticationContext authenticationContext, Map params, ProjectService projectService, ConstantsManager constantsManager, IssueService issueService, IssueLinkService issueLinkService, FieldManager fieldManager, CustomFieldManager customFieldManager, OptionsManager optionsManager, SearchService searchService) throws ServletException{
 
         //Traemos el usuario que se encuentra loggeado actualmente
         ApplicationUser user = authenticationContext.getLoggedInUser();
@@ -165,7 +165,7 @@ public class GJIRAUtils {
         Option opcionParaAplicacion = opcionesDisponiblesAplicacion.stream().filter(opcion -> opcion.getValue().equalsIgnoreCase(categoria_item[1])).findFirst().get();
         try {
             IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
-            issueInputParameters.setSummary(!problemKey.equalsIgnoreCase("Service Request") ? problem.getSummary() : mainIssue.getSummary())
+            issueInputParameters.setSummary(!problemKey.equalsIgnoreCase("Service Request") ? problem.getSummary() : nuevoNombre)
                     .setIssueTypeId(incidenteIssueType.getId())
                     .setReporterId(user.getName())
                     .setAssigneeId(nuevoResponsable)

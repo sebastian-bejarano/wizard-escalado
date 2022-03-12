@@ -41,13 +41,13 @@
                     <label>
                         Deseo cambiarle el nombre al problem elegido?
                     </label>
-                    <input type="checkbox" name="cambiarNombreProblema" id="cambiarNombre" onclick="cambiarNombre(this)"/>
+                    <input type="checkbox" name="cambiarNombreProblema" id="cambiarNombre" onclick=""/>
                 </div>
                 <div class="field-group">
                     <label>
                         Nuevo nombre para el problem
                     </label>
-                    <input type="text" name="nombreNuevo" id="nombreNuevo"/>
+                    <input type="text" name="nombreNuevo" readonly id="nombreNuevo"/>
                 </div>
             #else
                 <div class="field-group">
@@ -60,13 +60,13 @@
                     <label>
                         Deseo cambiarle el nombre al problem elegido?
                     </label>
-                    <input type="checkbox" name="cambiarNombreProblema" value="Si" onclick="javascript: return false;"/>
+                    <input type="checkbox" id="cambiarNombre" name="cambiarNombreProblema" value="Si" onclick="javascript: return false;"/>
                 </div>
                 <div class="field-group">
                     <label>
-                        Nuevo nombre para el problem
+                        Nombre para el incidente
                     </label>
-                    <input type="text" name="nombreNuevo" readonly value="Service Request - No lleva problem asociado"/>
+                    <input type="text" name="nombreNuevo" value="Nombre para el incidente"/>
                 </div>
             #end
             <!-- Dialog footer -->
@@ -74,14 +74,11 @@
                 <!-- Actions to render on the right of the footer -->
                 <div class="aui-dialog2-footer-actions">
                     <input type="submit" id="submitBtn" class="aui-button aui-button-primary" value="Siguiente"/>
-                    <button type ="button" class="aui-button aui-button-link" id="closeBtn">Close</button>
+                    <button type ="button" class="cancel" id="closeBtn">Cerrar</button>
                 </div>
                 <!-- Hint text is rendered on the left of the footer -->
                 <div class="aui-dialog2-footer-hint">Seleccione el problem o cree uno nuevo.</div>
             </footer>
-            <!--<div class="aui-dialog2-footer-actions">
-                <input type="submit" class="aui-button aui-button-primary" style="left:50%;" value="Siguiente"/>
-            </div>-->
         <form>
     </body>
 </html>

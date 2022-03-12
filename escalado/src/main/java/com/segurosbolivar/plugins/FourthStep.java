@@ -72,7 +72,7 @@ public class FourthStep extends HttpServlet {
         String problemAEnlazar = req.getParameter("problem");
         String crearProblema = (req.getParameter("crearProblemaNuevo") != null && !req.getParameter("crearProblemaNuevo").isEmpty() ? req.getParameter("crearProblemaNuevo") : "No");
         String cambiarNombreProblema = (req.getParameter("cambiarNombreProblema") != null && !req.getParameter("cambiarNombreProblema").isEmpty() ? req.getParameter("cambiarNombreProblema") : "No");
-        String nombreNuevoProblema = req.getParameter("nombreNuevo");
+        String nombreNuevo = req.getParameter("nombreNuevo");
         //Obtenemos el issue que vamos a escalar (Que debería ser en este momento tipo incident)
         Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueAEscalar);
         //Obtenemos el issue tipo problem con el cuál se va a enlazar
@@ -93,21 +93,24 @@ public class FourthStep extends HttpServlet {
                 if(cambiarNombreProblema.equalsIgnoreCase("No")) {
                     params.put("problem", problem);
                 }else{
+                    params.put("nombreNuevo", "");
                     IssueInputParameters inputParameters = issueService.newIssueInputParameters()
-                            .setSummary(nombreNuevoProblema);
+                            .setSummary(nombreNuevo);
 
                     IssueService.UpdateValidationResult result = issueService.validateUpdate(authenticationContext.getLoggedInUser(),problem.getId(),inputParameters);
                     if(result.getErrorCollection().hasAnyErrors()){
                         throw new ServletException("No se pudo cambiar el nombre del problem");
                     }
                     else{
-                        issueService.update(authenticationContext.getLoggedInUser(), result);
+                        problem = issueService.update(authenticationContext.getLoggedInUser(), result).getIssue();
+                        params.put("problem", problem);
                     }
                 }
             }
             else{
                 params.put("isServiceRequest","true");
                 params.put("problem", "Service Request");
+                params.put("nombreNuevo", " - "+nombreNuevo);
             }
         }
         //Código del issueLink "Relacionado"

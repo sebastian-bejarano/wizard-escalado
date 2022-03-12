@@ -79,10 +79,10 @@ public class FifthStep extends HttpServlet {
         String epica = req.getParameter("epica");
         String issueKey = issueAEscalar.split("/")[0].trim();
         String projectKey = proyectoAEscalar.split("/")[0].trim();
-        if(!problemAEnlazar.equalsIgnoreCase("Service Request - No lleva problem asociado")) {
+        if(!problemAEnlazar.split("-")[0].trim().equalsIgnoreCase("Service Request")) {
             String problemKey = problemAEnlazar.split("/")[0].trim();
             if (GJIRAUtils.relacionarIssuesConRelacionado(issueKey, problemKey, this.issueLinkService, params, this.authenticationContext)) {
-                if (GJIRAUtils.crearIncidenteProductivoEnlazado(projectKey, issueKey, problemKey, prioridad, momentoError, severidad, fabricaDesarrollo, motivoEscalamiento, epica, nuevoResponsable, this.authenticationContext, params, projectService, constantsManager, issueService, issueLinkService, ComponentAccessor.getFieldManager(), ComponentAccessor.getCustomFieldManager(), ComponentAccessor.getOptionsManager(), searchService)) {
+                if (GJIRAUtils.crearIncidenteProductivoEnlazado(projectKey, issueKey, problemKey, "", prioridad, momentoError, severidad, fabricaDesarrollo, motivoEscalamiento, epica, nuevoResponsable, this.authenticationContext, params, projectService, constantsManager, issueService, issueLinkService, ComponentAccessor.getFieldManager(), ComponentAccessor.getCustomFieldManager(), ComponentAccessor.getOptionsManager(), searchService)) {
                     if (GJIRAUtils.updateIssueStatus(ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey), false, nuevoResponsable, authenticationContext, issueService)) {
                         params.put("mensaje", "Incident escalado con éxito");
                     } else {
@@ -91,7 +91,7 @@ public class FifthStep extends HttpServlet {
                 }
             }
         }else{
-            if (GJIRAUtils.crearIncidenteProductivoEnlazado(projectKey, issueKey, "Service Request", prioridad, momentoError, severidad, fabricaDesarrollo, motivoEscalamiento, epica, nuevoResponsable, this.authenticationContext, params, projectService, constantsManager, issueService, issueLinkService, ComponentAccessor.getFieldManager(), ComponentAccessor.getCustomFieldManager(), ComponentAccessor.getOptionsManager(), searchService)) {
+            if (GJIRAUtils.crearIncidenteProductivoEnlazado(projectKey, issueKey, "Service Request", problemAEnlazar.split("-")[1].trim(), prioridad, momentoError, severidad, fabricaDesarrollo, motivoEscalamiento, epica, nuevoResponsable, this.authenticationContext, params, projectService, constantsManager, issueService, issueLinkService, ComponentAccessor.getFieldManager(), ComponentAccessor.getCustomFieldManager(), ComponentAccessor.getOptionsManager(), searchService)) {
                 if (GJIRAUtils.updateIssueStatus(ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey), true, nuevoResponsable, authenticationContext, issueService)) {
                     params.put("mensaje", "Service Request escalado con éxito");
                 } else {
