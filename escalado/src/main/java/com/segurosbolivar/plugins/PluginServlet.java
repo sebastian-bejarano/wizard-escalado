@@ -58,13 +58,21 @@ public class PluginServlet extends HttpServlet {
         params.put("issueKey", issueKey);
         String userName = user.getUsername();
         Issue issueAEscalar = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey);
-
+        boolean centroDesarrollo = ComponentAccessor.getFieldManager().getCustomField("customfield_18009").hasValue(issueAEscalar);
+        boolean vicepresidenciaGerencia = ComponentAccessor.getFieldManager().getCustomField("customfield_10403").hasValue(issueAEscalar);
+        boolean categoriaItem = ComponentAccessor.getFieldManager().getCustomField("customfield_10409").hasValue(issueAEscalar);
+        boolean grupoAsignacion = ComponentAccessor.getFieldManager().getCustomField("customfield_10439").hasValue(issueAEscalar);
         if(userName == null){
             redirectToLogin(req,res);
             return;
         }
-        res.setContentType("text/html; charset=utf-8");
-        templateRenderer.render("templates/inicio.vm", params,res.getWriter());
+        if(centroDesarrollo && vicepresidenciaGerencia && categoriaItem && grupoAsignacion){
+            res.setContentType("text/html; charset=utf-8");
+            templateRenderer.render("templates/inicio.vm", params,res.getWriter());
+        }
+        else{
+            res.getWriter().write("Antes de escalar, asegúrese que todos los campos relevantes estén llenos.");
+        }
 
     }
 

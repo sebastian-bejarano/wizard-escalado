@@ -68,7 +68,7 @@ public class ThirdStep extends HttpServlet {
 
         try {
             //Se obtiene la lista de issues con esas carcaterísticas
-            List<Issue> problemsConEseCategoriaItem = GJIRAUtils.getIssuesByTypeAndCategoriaItem("PPP","Problem",categoria_item,authenticationContext,searchService);
+            List<Issue> problemsConEseCategoriaItem = GJIRAUtils.getIssuesByTypeAndCategoriaItem("MDSB","Problem",categoria_item,authenticationContext,searchService);
             params.put("problems",problemsConEseCategoriaItem);
             params.put("issueKey",mainIssueKey);
             params.put("proyectoAEscalar",proyecto);

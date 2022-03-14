@@ -82,6 +82,8 @@ public class FourthStep extends HttpServlet {
             if(!resultadoCreacion.getErrorCollection().hasAnyErrors()){
                 IssueService.IssueResult nuevoProblema = issueService.create(authenticationContext.getLoggedInUser(),resultadoCreacion);
                 problem = nuevoProblema.getIssue();
+                params.put("problem", problem);
+
             }
             else{
                 throw new ServletException(resultadoCreacion.getErrorCollection().toString());
