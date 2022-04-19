@@ -35,7 +35,7 @@
                     <label>
                         Deseo asociarle un problema nuevo
                     </label>
-                    <input type="checkbox" name="crearProblemaNuevo" value="Si"/>
+                    <input type="checkbox" id="crearProblemaNuevo" name="crearProblemaNuevo" value="Si"/>
                 </div>
                 <div class="field-group">
                     <label>

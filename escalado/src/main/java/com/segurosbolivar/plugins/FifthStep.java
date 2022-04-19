@@ -84,7 +84,8 @@ public class FifthStep extends HttpServlet {
             if (GJIRAUtils.relacionarIssuesConRelacionado(issueKey, problemKey, this.issueLinkService, params, this.authenticationContext)) {
                 if (GJIRAUtils.crearIncidenteProductivoEnlazado(projectKey, issueKey, problemKey, "", prioridad, momentoError, severidad, fabricaDesarrollo, motivoEscalamiento, epica, nuevoResponsable, this.authenticationContext, params, projectService, constantsManager, issueService, issueLinkService, ComponentAccessor.getFieldManager(), ComponentAccessor.getCustomFieldManager(), ComponentAccessor.getOptionsManager(), searchService)) {
                     if (GJIRAUtils.updateIssueStatus(ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey), false, nuevoResponsable, authenticationContext, issueService)) {
-                        params.put("mensaje", "Incident escalado con éxito");
+                        if(!params.containsKey("mensaje"))
+                            params.put("mensaje", "Incident escalado con éxito");
                     } else {
                         params.put("mensaje", "Falló la actualización de estado");
                     }

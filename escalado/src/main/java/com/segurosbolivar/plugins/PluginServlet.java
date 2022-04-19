@@ -59,21 +59,24 @@ public class PluginServlet extends HttpServlet {
         String userName = user.getUsername();
         Issue issueAEscalar = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey);
         boolean centroDesarrollo = ComponentAccessor.getFieldManager().getCustomField("customfield_18009").hasValue(issueAEscalar);
-        boolean vicepresidenciaGerencia = ComponentAccessor.getFieldManager().getCustomField("customfield_10403").hasValue(issueAEscalar);
-        boolean categoriaItem = ComponentAccessor.getFieldManager().getCustomField("customfield_10409").hasValue(issueAEscalar);
+        boolean vicepresidencia = ComponentAccessor.getFieldManager().getCustomField("customfield_10403").hasValue(issueAEscalar);
+        boolean gerencia = issueAEscalar.getCustomFieldValue(ComponentAccessor.getFieldManager().getCustomField("customfield_10403")).toString().split(",").length>1 ? true : false;
+        boolean ubi_1 = ComponentAccessor.getFieldManager().getCustomField("customfield_10707").hasValue(issueAEscalar);
+        boolean ubi_2 = issueAEscalar.getCustomFieldValue(ComponentAccessor.getFieldManager().getCustomField("customfield_10707")).toString().split(",").length>1 ? true : false;
+        boolean categoria = ComponentAccessor.getFieldManager().getCustomField("customfield_10409").hasValue(issueAEscalar);
+        boolean item = issueAEscalar.getCustomFieldValue(ComponentAccessor.getFieldManager().getCustomField("customfield_10409")).toString().split(",").length>1 ? true : false;
         boolean grupoAsignacion = ComponentAccessor.getFieldManager().getCustomField("customfield_10439").hasValue(issueAEscalar);
         if(userName == null){
             redirectToLogin(req,res);
             return;
         }
-        if(centroDesarrollo && vicepresidenciaGerencia && categoriaItem && grupoAsignacion){
+        if(centroDesarrollo && vicepresidencia && categoria && item && grupoAsignacion && gerencia && ubi_1 && ubi_2){
             res.setContentType("text/html; charset=utf-8");
             templateRenderer.render("templates/inicio.vm", params,res.getWriter());
         }
         else{
-            res.getWriter().write("Antes de escalar, asegúrese que todos los campos relevantes estén llenos.");
+            res.getWriter().write("Antes de escalar, asegúrese que todos los campos relevantes estén llenos (Centro de desarrollo, Vicepresidencia/Gerencia, Ubicación (Lugar y centro), Categoría / Ítem configuración, Grupo Asignación).");
         }
-
     }
 
     private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException

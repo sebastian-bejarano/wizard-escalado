@@ -78,7 +78,7 @@ public class FourthStep extends HttpServlet {
         //Obtenemos el issue tipo problem con el cuál se va a enlazar
         Issue problem;
         if(crearProblema.equals("Si")){
-            IssueService.CreateValidationResult resultadoCreacion = GJIRAUtils.crearProblemaAsociado(authenticationContext,issueService,issue,ComponentAccessor.getFieldManager(),ComponentAccessor.getCustomFieldManager(),ComponentAccessor.getOptionsManager(),ComponentAccessor.getProjectManager());
+            IssueService.CreateValidationResult resultadoCreacion = GJIRAUtils.crearProblemaAsociado(authenticationContext,issueService,issue,nombreNuevo,ComponentAccessor.getFieldManager(),ComponentAccessor.getCustomFieldManager(),ComponentAccessor.getOptionsManager(),ComponentAccessor.getProjectManager());
             if(!resultadoCreacion.getErrorCollection().hasAnyErrors()){
                 IssueService.IssueResult nuevoProblema = issueService.create(authenticationContext.getLoggedInUser(),resultadoCreacion);
                 problem = nuevoProblema.getIssue();
