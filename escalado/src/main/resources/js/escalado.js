@@ -1,13 +1,18 @@
 setInterval(() =>{
     let cambiarNombreCheckBox = document.querySelector("#cambiarNombre");
     let crearProblemaNuevoCheckBox = document.querySelector("#crearProblemaNuevo");
-    if(cambiarNombreCheckBox){
-        cambiarNombreCheckBox.onclick = changeFunction;
-        document.querySelector("#nombreNuevo").addEventListener('input', updateValue);
-    }
-    if(crearProblemaNuevoCheckBox){
-        crearProblemaNuevoCheckBox.onclick = nuevoChangeFunction;
-        document.querySelector("#nombreNuevo").addEventListener('input', updateValue);
+    let seleccioneElProblemDropDownList = document.querySelector("#problem");
+    if(seleccioneElProblemDropDownList){
+        if(seleccioneElProblemDropDownList.value != "Service Request"){
+            if(cambiarNombreCheckBox){
+                cambiarNombreCheckBox.onclick = changeFunction;
+                document.querySelector("#nombreNuevo").addEventListener('input', updateValue);
+            }
+            if(crearProblemaNuevoCheckBox){
+                crearProblemaNuevoCheckBox.onclick = nuevoChangeFunction;
+                document.querySelector("#nombreNuevo").addEventListener('input', updateValue);
+            }
+        }
     }
 },50);
 

@@ -58,19 +58,26 @@ public class PluginServlet extends HttpServlet {
         params.put("issueKey", issueKey);
         String userName = user.getUsername();
         Issue issueAEscalar = ComponentAccessor.getIssueManager().getIssueByCurrentKey(issueKey);
-        boolean centroDesarrollo = ComponentAccessor.getFieldManager().getCustomField("customfield_18009").hasValue(issueAEscalar);
-        boolean vicepresidencia = ComponentAccessor.getFieldManager().getCustomField("customfield_10403").hasValue(issueAEscalar);
-        boolean gerencia = issueAEscalar.getCustomFieldValue(ComponentAccessor.getFieldManager().getCustomField("customfield_10403")).toString().split(",").length>1 ? true : false;
-        boolean ubi_1 = ComponentAccessor.getFieldManager().getCustomField("customfield_10707").hasValue(issueAEscalar);
-        boolean ubi_2 = issueAEscalar.getCustomFieldValue(ComponentAccessor.getFieldManager().getCustomField("customfield_10707")).toString().split(",").length>1 ? true : false;
-        boolean categoria = ComponentAccessor.getFieldManager().getCustomField("customfield_10409").hasValue(issueAEscalar);
-        boolean item = issueAEscalar.getCustomFieldValue(ComponentAccessor.getFieldManager().getCustomField("customfield_10409")).toString().split(",").length>1 ? true : false;
-        boolean grupoAsignacion = ComponentAccessor.getFieldManager().getCustomField("customfield_10439").hasValue(issueAEscalar);
+        boolean noFaltaAlguno = true;
+        boolean centroDesarrollo=false,vicepresidencia=false,gerencia=false,ubi_1=false,ubi_2=false,categoria=false,item=false,grupoAsignacion=false;
+        try {
+            centroDesarrollo = ComponentAccessor.getFieldManager().getCustomField("customfield_18009").hasValue(issueAEscalar);
+            vicepresidencia = ComponentAccessor.getFieldManager().getCustomField("customfield_10403").hasValue(issueAEscalar);
+            gerencia = issueAEscalar.getCustomFieldValue(ComponentAccessor.getFieldManager().getCustomField("customfield_10403")).toString().split(",").length > 1 ? true : false;
+            ubi_1 = ComponentAccessor.getFieldManager().getCustomField("customfield_10707").hasValue(issueAEscalar);
+            ubi_2 = issueAEscalar.getCustomFieldValue(ComponentAccessor.getFieldManager().getCustomField("customfield_10707")).toString().split(",").length > 1 ? true : false;
+            categoria = ComponentAccessor.getFieldManager().getCustomField("customfield_10409").hasValue(issueAEscalar);
+            item = issueAEscalar.getCustomFieldValue(ComponentAccessor.getFieldManager().getCustomField("customfield_10409")).toString().split(",").length > 1 ? true : false;
+            grupoAsignacion = ComponentAccessor.getFieldManager().getCustomField("customfield_10439").hasValue(issueAEscalar);
+        }
+        catch(Exception ex){
+            noFaltaAlguno = false;
+        }
         if(userName == null){
             redirectToLogin(req,res);
             return;
         }
-        if(centroDesarrollo && vicepresidencia && categoria && item && grupoAsignacion && gerencia && ubi_1 && ubi_2){
+        if(centroDesarrollo && vicepresidencia && categoria && item && grupoAsignacion && gerencia && ubi_1 && ubi_2 && noFaltaAlguno){
             res.setContentType("text/html; charset=utf-8");
             templateRenderer.render("templates/inicio.vm", params,res.getWriter());
         }

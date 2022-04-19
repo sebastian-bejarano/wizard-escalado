@@ -20,7 +20,7 @@
             </div>
             <div class="field-group">
                 <label>Seleccione el problem</label>
-                <select name="problem" class="select">
+                <select name="problem" class="select" id="problem">
                     #if($issueType.equalsIgnoreCase("Incident"))
                         #foreach ($problem in $problems)
                             <option value="$problem.getKey()">$problem.getKey() - $problem.getSummary()</option>
@@ -47,7 +47,7 @@
                     <label>
                         Nuevo nombre para el problem
                     </label>
-                    <input type="text" name="nombreNuevo" readonly id="nombreNuevo"/>
+                    <input type="text" name="nombreNuevo" value="Nombre para el incidente"/>
                 </div>
             #else
                 <div class="field-group">
@@ -60,7 +60,7 @@
                     <label>
                         Deseo cambiarle el nombre al problem elegido?
                     </label>
-                    <input type="checkbox" id="cambiarNombre" name="cambiarNombreProblema" value="Si" onclick="javascript: return false;"/>
+                    <input type="checkbox" name="cambiarNombreProblema" value="Si" onclick="javascript: return false;"/>
                 </div>
                 <div class="field-group">
                     <label>
